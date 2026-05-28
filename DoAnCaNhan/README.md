@@ -4,7 +4,9 @@
 
 Đây là đồ án cá nhân môn **Trí Tuệ Nhân Tạo**, xây dựng chương trình mô phỏng bài toán **Vacuum Cleaner Problem** bằng ngôn ngữ **Python**.  
 Chương trình cho phép tạo ngẫu nhiên một môi trường dạng ma trận, trong đó máy hút bụi di chuyển qua các ô để làm sạch toàn bộ các ô bẩn.
+
 ---
+
 ## 2. Mục tiêu đồ án
 
 Đồ án tập trung xây dựng một chương trình mô phỏng quá trình giải bài toán **Vacuum Cleaner Problem** sử dụng nhiều thuật toán tìm kiếm trong lĩnh vực **Trí tuệ nhân tạo**:
@@ -47,6 +49,7 @@ Khi máy hút bụi đi đến một ô, ô đó được xem như đã được
 ---
 
 ## 4. Các thuật toán đã được cài đặt gồm:
+
 ### 4.1. Tìm kiếm không có thông tin: BFS, DFS, UCS, IDS
 
 - **BFS** - Breadth-First Search
@@ -69,18 +72,35 @@ Mỗi thuật toán được cài đặt theo 2 dạng xử lý khác nhau:
 Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự khác nhau về thời điểm phát hiện trạng thái đích, đồng thời hỗ trợ so sánh cách hoạt động của các thuật toán tìm kiếm cơ bản trong cùng một môi trường bài toán.
 
 #### Hình ảnh GIF minh họa
+
 | Thuật toán | GIF |
 |------------|-----|
-| **BFS** | <img src="images/bfs.gif" width="800" alt="BFS"> |
+| **BFS_Dạng 1** | <img src="images/bfs_d1.gif" width="800" alt="BFS DẠNG 1"> |
+| **BFS_Dạng 2** | <img src="images/bfs_d2.gif" width="800" alt="BFS DẠNG 2"> |
+| **DFS_Dạng 1** | <img src="images/dfs_d1.gif" width="800" alt="DFS DẠNG 1"> |
+| **DFS_Dạng 2** | <img src="images/dfs_d2.gif" width="800" alt="DFS DẠNG 2"> |
+| **IDS_Dạng 1** | <img src="images/ids_d1.gif" width="800" alt="IDS DẠNG 1"> |
+| **IDS_Dạng 2** | <img src="images/ids_d2.gif" width="800" alt="IDS DẠNG 2"> |
+| **UCS_Dạng 1** | <img src="images/ucs_d1.gif" width="800" alt="UCS DẠNG 1"> |
+
 ### 4.2. Tìm kiếm có thông tin: GREEDY, A*, IDA*
 
-**Thành phần chính của bài toán tìm kiếm**
+#### Thành phần chính của bài toán tìm kiếm
+
 - **Không gian trạng thái**: Các trạng thái của môi trường mxn, trong đó mỗi ô có thể là 0 sạch hoặc 1 bẩn. Ngoài ra, mỗi trạng thái còn bao gồm vị trí hiện tại của máy hút bụi V trong bảng.
 - **Trạng thái ban đầu**: Là trạng thái xuất phát của quá trình tìm kiếm, gồm vị trí ban đầu của máy hút bụi và tình trạng sạch/bẩn của các ô. Ví dụ: máy hút bụi bắt đầu ở góc dưới bên phải, các ô bẩn được biểu diễn bằng 1.
 - **Trạng thái đích**: Là trạng thái mong muốn đạt được, khi tất cả các ô trong bảng 3x3 đều sạch, tức là toàn bộ các ô đều có giá trị 0.
 - **Hành động**: Máy hút bụi có thể di chuyển lên, xuống, trái, phải nếu vị trí di chuyển hợp lệ. Ngoài ra, nếu ô hiện tại đang bẩn thì máy hút bụi có thể thực hiện hành động hút bụi để làm sạch ô đó.
 - **Chi phí**: Mỗi hành động di chuyển hoặc hút bụi có chi phí là 1. Đồng thời, các thuật toán GREEDY, A*, IDA* sử dụng hàm heuristic để ưu tiên trạng thái tốt hơn, ví dụ: số ô bẩn còn lại hoặc khoảng cách Manhattan từ máy hút bụi đến ô bẩn gần nhất.
 - **Solution**: Là chuỗi các hành động từ trạng thái ban đầu đến trạng thái đích, giúp máy hút bụi di chuyển và làm sạch toàn bộ các ô bẩn trong bảng với chi phí phù hợp hoặc tối ưu tùy theo thuật toán sử dụng.
+
+#### Hình ảnh GIF minh họa
+
+| Thuật toán | GIF |
+|------------|-----|
+| **GREEDY** | <img src="images/greedy.gif" width="800" alt="GREEDY"> |
+| **A\*** | <img src="images/astar.gif" width="800" alt="ASTAR"> |
+
 ---
 
 ## 5. Kết luận
@@ -93,6 +113,7 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 - Học được từ dự án: Hiểu sâu hơn về cách áp dụng các thuật toán AI vào bài toán thực tế, kỹ năng lập trình Python.
 - Khó khăn trong việc thực hiện: Một số thuật toán rất trừu tượng, khó hiểu nên có thể mô phỏng không đúng ý tưởng một số thuật toán; Đa số là tài liệu tiếng anh.
 - Hướng phát triển: Trực quan hóa 1 cách rõ ràng ý tưởng cảu từng giải thuật, áp dụng để làm game cho đồ án nhóm cuối kỳ.
+
 ---
 
 ## Tài liệu tham khảo:
