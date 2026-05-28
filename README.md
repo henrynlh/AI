@@ -101,6 +101,7 @@ Trong đó:
 |----------------|-----------|
 | **GREEDY** | <img src="images/greedy.gif" width="700" alt="GREEDY"> |
 | **A\*** | <img src="images/astar.gif" width="700" alt="ASTAR"> |
+
 ---
 
 ## 4. Tài liệu tham khảo
