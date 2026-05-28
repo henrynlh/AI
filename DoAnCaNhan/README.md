@@ -75,13 +75,13 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 
 | Thuật toán | GIF |
 |------------|-----|
-| **BFS_Dạng 1** | <img src="images/bfs_d1.gif" width="800" alt="BFS DẠNG 1"> |
-| **BFS_Dạng 2** | <img src="images/bfs_d2.gif" width="800" alt="BFS DẠNG 2"> |
-| **DFS_Dạng 1** | <img src="images/dfs_d1.gif" width="800" alt="DFS DẠNG 1"> |
-| **DFS_Dạng 2** | <img src="images/dfs_d2.gif" width="800" alt="DFS DẠNG 2"> |
-| **IDS_Dạng 1** | <img src="images/ids_d1.gif" width="800" alt="IDS DẠNG 1"> |
-| **IDS_Dạng 2** | <img src="images/ids_d2.gif" width="800" alt="IDS DẠNG 2"> |
-| **UCS_Dạng 1** | <img src="images/ucs_d1.gif" width="800" alt="UCS DẠNG 1"> |
+| **BFS_Dạng 1** | <img src="images/bfs_d1.gif" width="700" alt="BFS DẠNG 1"> |
+| **BFS_Dạng 2** | <img src="images/bfs_d2.gif" width="700" alt="BFS DẠNG 2"> |
+| **DFS_Dạng 1** | <img src="images/dfs_d1.gif" width="700" alt="DFS DẠNG 1"> |
+| **DFS_Dạng 2** | <img src="images/dfs_d2.gif" width="700" alt="DFS DẠNG 2"> |
+| **IDS_Dạng 1** | <img src="images/ids_d1.gif" width="700" alt="IDS DẠNG 1"> |
+| **IDS_Dạng 2** | <img src="images/ids_d2.gif" width="700" alt="IDS DẠNG 2"> |
+| **UCS_Dạng 1** | <img src="images/ucs_d1.gif" width="700" alt="UCS DẠNG 1"> |
 
 ### 4.2. Tìm kiếm có thông tin: GREEDY, A*, IDA*
 
@@ -98,8 +98,8 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 
 | Thuật toán | GIF |
 |------------|-----|
-| **GREEDY** | <img src="images/greedy.gif" width="800" alt="GREEDY"> |
-| **A\*** | <img src="images/astar.gif" width="800" alt="ASTAR"> |
+| **GREEDY** | <img src="images/greedy.gif" width="700" alt="GREEDY"> |
+| **A\*** | <img src="images/astar.gif" width="700" alt="ASTAR"> |
 
 ---
 
