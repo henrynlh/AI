@@ -10,6 +10,21 @@ from algorithms.algorithm_manager import (
     get_search_types
 )
 
+# =========================
+# Thuật toán không chia Dạng 1 / Dạng 2
+# =========================
+NO_TYPE_ALGORITHMS = [
+    "Greedy",
+    "A*"
+]
+
+
+# =========================
+# Thuật toán chỉ có Dạng 1
+# =========================
+ONE_TYPE_ALGORITHMS = [
+    "UCS"
+]
 
 class VacuumCleanerUI:
     def __init__(self, root):
@@ -26,12 +41,13 @@ class VacuumCleanerUI:
         self.speed = 1000
         self.execution_time = 0
 
-        # Cache label widgets để khi chạy từng bước không phải destroy/create lại nhiều lần.
-        # Việc này giữ cảm giác mượt giống bản gốc nhưng nhẹ hơn.
         self.grid_cache = {}
 
         self.setup_styles()
         self.setup_ui()
+
+        # Khởi tạo trạng thái ban đầu mặc định
+        self.load_default_state()
 
     # =========================
     # STYLE
@@ -120,12 +136,24 @@ class VacuumCleanerUI:
             font=("Helvetica", 12)
         )
         self.algorithm_combobox.pack(padx=25, pady=5, fill="x")
+        self.algorithm_combobox.bind("<<ComboboxSelected>>", self.on_algorithm_change)
 
-        ttk.Label(self.sidebar, text="Dạng giải", style="Sidebar.TLabel").pack(pady=(12, 3))
+        # =========================
+        # Dạng giải
+        # Đặt trong frame riêng để dễ ẩn/hiện
+        # =========================
+        self.search_type_frame = tk.Frame(self.sidebar, bg="#2C3E50")
+
+        ttk.Label(
+            self.search_type_frame,
+            text="Dạng giải",
+            style="Sidebar.TLabel"
+        ).pack(pady=(12, 3))
+
         search_type_values = get_search_types()
         self.search_type_var = tk.StringVar(value=search_type_values[0])
         self.search_type_combobox = ttk.Combobox(
-            self.sidebar,
+            self.search_type_frame,
             textvariable=self.search_type_var,
             values=search_type_values,
             state="readonly",
@@ -133,11 +161,19 @@ class VacuumCleanerUI:
         )
         self.search_type_combobox.pack(padx=25, pady=5, fill="x")
 
-        ttk.Label(self.sidebar, text="Tốc độ chạy", style="Sidebar.TLabel").pack(pady=(12, 3))
+        self.search_type_frame.pack(fill="x")
+
+        self.speed_label = ttk.Label(
+            self.sidebar,
+            text="Tốc độ chạy",
+            style="Sidebar.TLabel"
+        )
+        self.speed_label.pack(pady=(12, 3))
+
         self.speed_scale = ttk.Scale(
             self.sidebar,
-            from_=100,
-            to=2000,
+            from_=2000,
+            to=100,
             orient=tk.HORIZONTAL,
             command=self.on_speed_change
         )
@@ -185,6 +221,38 @@ class VacuumCleanerUI:
             fg="white",
             justify="left"
         ).pack(pady=14, padx=25, anchor="w")
+
+        self.on_algorithm_change()
+
+    # =========================
+    # ẨN / HIỆN DẠNG GIẢI THEO THUẬT TOÁN
+    # =========================
+    def on_algorithm_change(self, event=None):
+        algorithm = self.algorithm_var.get()
+
+        # Greedy và A* không chia dạng
+        # nên ẩn phần chọn Dạng giải
+        if algorithm in NO_TYPE_ALGORITHMS:
+            self.search_type_frame.pack_forget()
+
+        else:
+            # Nếu Dạng giải đang bị ẩn thì hiện lại
+            if not self.search_type_frame.winfo_manager():
+                self.search_type_frame.pack(
+                    fill="x",
+                    before=self.speed_label
+                )
+
+            # UCS chỉ có Dạng 1
+            if algorithm in ONE_TYPE_ALGORITHMS:
+                self.search_type_combobox["values"] = ["Dạng 1"]
+                self.search_type_var.set("Dạng 1")
+
+            # BFS, DFS, IDS có Dạng 1 và Dạng 2
+            else:
+                search_type_values = get_search_types()
+                self.search_type_combobox["values"] = search_type_values
+                self.search_type_var.set(search_type_values[0])
 
     def setup_content(self):
         self.content_frame = ttk.Frame(
@@ -235,12 +303,6 @@ class VacuumCleanerUI:
         )
         self.time_label.pack(side="left", padx=25)
 
-        # =========================
-        # BODY CHIA 2 CỘT
-        # Bên trái: 2 ô trên/dưới
-        # Bên phải: process log dài
-        # Dùng grid để khi phóng to cửa sổ, 2 cột co giãn ổn định hơn pack.
-        # =========================
         self.body_frame = ttk.Frame(self.content_frame, style="Content.TFrame")
         self.body_frame.pack(fill="both", expand=True, padx=12, pady=10)
 
@@ -254,13 +316,10 @@ class VacuumCleanerUI:
         self.right_column = ttk.Frame(self.body_frame, style="Panel.TFrame")
         self.right_column.grid(row=0, column=1, sticky="nsew")
 
-        # Ô trên lớn hơn ô dưới để phần đang chạy không bị cắt,
-        # nhưng vẫn giữ ô kết quả luôn nhìn thấy.
         self.left_column.rowconfigure(0, weight=3, minsize=330)
         self.left_column.rowconfigure(1, weight=2, minsize=210)
         self.left_column.columnconfigure(0, weight=1)
 
-        # Ô trên bên trái: hiển thị các bước solve
         self.solve_steps_box = tk.Frame(
             self.left_column,
             bg="#FFFFFF",
@@ -278,7 +337,6 @@ class VacuumCleanerUI:
         self.solve_grid_frame = tk.Frame(self.solve_steps_box, bg="#FFFFFF")
         self.solve_grid_frame.pack(fill="both", expand=True, padx=8, pady=(0, 8))
 
-        # Ô dưới bên trái: trạng thái kết quả
         self.result_box = tk.Frame(
             self.left_column,
             bg="#FFFFFF",
@@ -296,7 +354,6 @@ class VacuumCleanerUI:
         self.result_grid_frame = tk.Frame(self.result_box, bg="#FFFFFF")
         self.result_grid_frame.pack(fill="both", expand=True, padx=8, pady=(0, 8))
 
-        # Ô dài bên phải: process log
         self.log_box = tk.Frame(
             self.right_column,
             bg="#FFFFFF",
@@ -335,11 +392,6 @@ class VacuumCleanerUI:
     # DRAW GRID
     # =========================
     def get_cell_style(self, rows, cols, small=False):
-        """Chọn kích thước ô theo kích thước ma trận.
-
-        Điểm quan trọng: không tính theo pixel liên tục mỗi step,
-        vì làm vậy khi animation dễ bị giật. Ta chỉ đổi size theo số dòng/cột.
-        """
         max_size = max(rows, cols)
 
         if small:
@@ -354,7 +406,6 @@ class VacuumCleanerUI:
         if max_size <= 4:
             return 4, 2, 22, 4, 4
         if max_size <= 5:
-            # 5x5 mà dùng height=2 sẽ dễ bị cắt khi chia thêm ô kết quả bên dưới.
             return 4, 1, 22, 4, 4
         if max_size <= 7:
             return 3, 1, 18, 3, 3
@@ -379,8 +430,6 @@ class VacuumCleanerUI:
 
         cached = self.grid_cache.get(parent_frame)
 
-        # Nếu vẫn cùng kích thước ma trận thì không destroy/create lại Label.
-        # Chỉ đổi text/bg/fg => mượt hơn bản gốc khi chạy từng bước.
         if cached is None or cached.get("style_key") != style_key:
             self.clear_grid(parent_frame)
 
@@ -435,6 +484,40 @@ class VacuumCleanerUI:
     # =========================
     # BUTTON FUNCTIONS
     # =========================
+    
+        # =========================
+    # LOAD TRẠNG THÁI MẶC ĐỊNH
+    # =========================
+    def load_default_state(self):
+        self.is_running = False
+
+        self.floor = [
+            [1, 1, 0],
+            ["V", 1, 0],
+            [0, 1, 1]
+        ]
+
+        self.solution_steps = []
+        self.current_step = -1
+        self.execution_time = 0
+
+        self.row_entry.delete(0, tk.END)
+        self.row_entry.insert(0, "3")
+
+        self.col_entry.delete(0, tk.END)
+        self.col_entry.insert(0, "3")
+
+        self.draw_grid(self.solve_grid_frame, self.floor)
+        self.draw_grid(self.result_grid_frame, None)
+
+        self.log_text.delete(1.0, tk.END)
+        self.log_text.insert(tk.END, "Đã tạo trạng thái ban đầu:\n")
+        self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
+
+        self.step_label.config(text="Step: 0")
+        self.total_steps_label.config(text="Total steps: 0")
+        self.time_label.config(text="Time: 0s")
+    
     def random_state(self):
         try:
             m = int(self.row_entry.get())
@@ -475,22 +558,33 @@ class VacuumCleanerUI:
             return
 
         algorithm = self.algorithm_var.get()
-        search_type = self.search_type_var.get()
+
+        # Thuật toán không chia dạng thì không lấy search_type
+        if algorithm in NO_TYPE_ALGORITHMS:
+            search_type = None
+            log_algorithm_name = algorithm
+        else:
+            search_type = self.search_type_var.get()
+            log_algorithm_name = f"{algorithm} - {search_type}"
 
         self.log_text.insert(
             tk.END,
-            f"\nBắt đầu giải bằng {algorithm} - {search_type}...\n"
+            f"\nBắt đầu giải bằng {log_algorithm_name}...\n"
         )
         self.log_text.see(tk.END)
 
         start_time = time.perf_counter()
 
         try:
-            result = solve(copy.deepcopy(self.floor), algorithm, search_type)
+            if search_type is None:
+                result = solve(copy.deepcopy(self.floor), algorithm)
+            else:
+                result = solve(copy.deepcopy(self.floor), algorithm, search_type)
+
         except Exception as e:
             messagebox.showerror(
                 "Lỗi khi giải",
-                f"{algorithm} - {search_type} bị lỗi:\n{e}"
+                f"{log_algorithm_name} bị lỗi:\n{e}"
             )
             self.log_text.insert(tk.END, f"Lỗi: {e}\n")
             return
@@ -519,7 +613,7 @@ class VacuumCleanerUI:
 
         self.log_text.insert(
             tk.END,
-            f"Đã tìm thấy lời giải bằng {algorithm} - {search_type}.\n"
+            f"Đã tìm thấy lời giải bằng {log_algorithm_name}.\n"
         )
         self.log_text.insert(
             tk.END,
@@ -592,4 +686,5 @@ class VacuumCleanerUI:
         self.time_label.config(text="Time: 0s")
 
     def on_speed_change(self, value):
+        # Kéo sang phải thì chạy nhanh hơn
         self.speed = int(float(value))
