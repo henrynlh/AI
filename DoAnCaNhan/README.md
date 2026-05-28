@@ -71,7 +71,7 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 #### Hình ảnh GIF minh họa
 | Thuật toán | GIF |
 |------------|-----|
-| **BFS** | <img src="images/bfs.gif" width="1200" alt="BFS"> |
+| **BFS** | <img src="images/bfs.gif" width="1000" alt="BFS"> |
 ### 4.2. Tìm kiếm có thông tin: GREEDY, A*, IDA*
 
 **Thành phần chính của bài toán tìm kiếm**
