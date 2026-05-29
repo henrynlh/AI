@@ -7,24 +7,10 @@ from core.vacuum_problem import random_floor, format_floor
 from algorithms.algorithm_manager import (
     solve,
     get_algorithm_names,
-    get_search_types
+    get_search_types,
+    get_no_type_algorithms,
+    get_one_type_algorithms
 )
-
-# =========================
-# Thuật toán không chia Dạng 1 / Dạng 2
-# =========================
-NO_TYPE_ALGORITHMS = [
-    "Greedy",
-    "A*"
-]
-
-
-# =========================
-# Thuật toán chỉ có Dạng 1
-# =========================
-ONE_TYPE_ALGORITHMS = [
-    "UCS"
-]
 
 class VacuumCleanerUI:
     def __init__(self, root):
@@ -230,9 +216,8 @@ class VacuumCleanerUI:
     def on_algorithm_change(self, event=None):
         algorithm = self.algorithm_var.get()
 
-        # Greedy và A* không chia dạng
-        # nên ẩn phần chọn Dạng giải
-        if algorithm in NO_TYPE_ALGORITHMS:
+        # Thuật toán không chia dạng thì ẩn Dạng giải
+        if algorithm in get_no_type_algorithms():
             self.search_type_frame.pack_forget()
 
         else:
@@ -243,12 +228,12 @@ class VacuumCleanerUI:
                     before=self.speed_label
                 )
 
-            # UCS chỉ có Dạng 1
-            if algorithm in ONE_TYPE_ALGORITHMS:
+            # Thuật toán chỉ có Dạng 1, ví dụ UCS
+            if algorithm in get_one_type_algorithms():
                 self.search_type_combobox["values"] = ["Dạng 1"]
                 self.search_type_var.set("Dạng 1")
 
-            # BFS, DFS, IDS có Dạng 1 và Dạng 2
+            # Các thuật toán có Dạng 1 và Dạng 2
             else:
                 search_type_values = get_search_types()
                 self.search_type_combobox["values"] = search_type_values
@@ -560,7 +545,7 @@ class VacuumCleanerUI:
         algorithm = self.algorithm_var.get()
 
         # Thuật toán không chia dạng thì không lấy search_type
-        if algorithm in NO_TYPE_ALGORITHMS:
+        if algorithm in get_no_type_algorithms():
             search_type = None
             log_algorithm_name = algorithm
         else:
