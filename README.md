@@ -85,18 +85,6 @@ Các thuật toán tiêu biểu:
 - **A\*** kết hợp chi phí thực tế đã đi và chi phí ước lượng đến đích.
 - **IDA\*** kết hợp ý tưởng của A\* và IDS, phù hợp khi muốn giảm bộ nhớ sử dụng.
 
-Công thức chính của A\*:
-
-```text
-f(n) = g(n) + h(n)
-```
-
-Trong đó:
-
-- `g(n)` là chi phí thực tế từ trạng thái ban đầu đến trạng thái hiện tại.
-- `h(n)` là chi phí ước lượng từ trạng thái hiện tại đến trạng thái đích.
-- `f(n)` là tổng chi phí dùng để ưu tiên chọn node.
-
 #### Giao diện minh họa
 
 | Nhóm thuật toán | Giao diện |
