@@ -100,6 +100,26 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 |------------|-----|
 | **GREEDY** | <img src="images/greedy.gif" width="700" alt="GREEDY"> |
 | **A\*** | <img src="images/astar.gif" width="700" alt="ASTAR"> |
+| **IDA\*** | <img src="images/idastar.gif" width="700" alt="IDASTAR"> |
+
+### 4.3. Tìm kiếm cục bộ: SIMPLE HILL CLIMBING, STEEPEST ASCENT HILL CLIMBING, STOCHASTIC HILL CLIMBING
+
+#### Thành phần chính của bài toán tìm kiếm
+
+- **Không gian trạng thái**: Các trạng thái của môi trường `m x n`, trong đó mỗi ô có thể là `0` sạch hoặc `1` bẩn. Ngoài ra, mỗi trạng thái còn bao gồm vị trí hiện tại của máy hút bụi `V` trong bảng.
+- **Trạng thái ban đầu**: Là trạng thái xuất phát của bài toán, gồm vị trí ban đầu của máy hút bụi và tình trạng sạch/bẩn của các ô trong môi trường.
+- **Trạng thái đích**: Là trạng thái mong muốn đạt được, khi tất cả các ô bẩn đã được làm sạch, tức là trong ma trận không còn ô nào có giá trị `1`.
+- **Hành động**: Máy hút bụi có thể di chuyển theo 4 hướng: lên, xuống, trái, phải nếu hướng di chuyển đó không vượt ra ngoài biên của ma trận. Khi máy hút bụi đi đến một ô bẩn, ô đó được xem như đã được làm sạch.
+- **Hàm đánh giá**: Các thuật toán tìm kiếm cục bộ sử dụng hàm `h(n)` để đánh giá trạng thái hiện tại và các trạng thái lân cận. Trong bài này, `h(n)` được xác định là số ô bẩn còn lại trong môi trường. Trạng thái nào có `h(n)` nhỏ hơn thì được xem là tốt hơn.
+- **Solution**: Là chuỗi các trạng thái từ trạng thái ban đầu đến trạng thái đích nếu thuật toán tìm được lời giải. Tuy nhiên, các thuật toán tìm kiếm cục bộ có thể bị kẹt tại trạng thái không còn lân cận tốt hơn, nên không phải lúc nào cũng tìm được lời giải tối ưu hoặc tìm được trạng thái đích.
+
+#### Hình ảnh GIF minh họa
+
+| Thuật toán | GIF |
+|------------|-----|
+| **SIMPLE HILL CLIMBING** | <img src="images/simple_hill_climbing.gif" width="700" alt="SIMPLE HILL CLIMBING"> |
+| **STEEPEST ASCENT HILL CLIMBING** | <img src="images/steepest_ascent_hill_climbing.gif" width="700" alt="STEEPEST ASCENT HILL CLIMBING"> |
+| **STOCHASTIC HILL CLIMBING** | <img src="images/stochastic_hill_climbing.gif" width="700" alt="STOCHASTIC HILL CLIMBING"> |
 
 ---
 
