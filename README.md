@@ -77,11 +77,13 @@ Các thuật toán tiêu biểu:
 
 - **Greedy Best-First Search**
 - **A\***
+- **IDA\***
 
 Đặc điểm chính:
 
 - **Greedy Best-First Search** chọn node có heuristic nhỏ nhất, tức là node có vẻ gần trạng thái đích nhất tại thời điểm xét.
 - **A\*** kết hợp chi phí thực tế đã đi và chi phí ước lượng đến đích.
+- **IDA\*** kết hợp ý tưởng của A\* và IDS, phù hợp khi muốn giảm bộ nhớ sử dụng.
 
 Công thức chính của A\*:
 
@@ -101,6 +103,33 @@ Trong đó:
 |----------------|-----------|
 | **GREEDY** | <img src="images/greedy.gif" width="700" alt="GREEDY"> |
 | **A\*** | <img src="images/astar.gif" width="700" alt="ASTAR"> |
+| **IDA\*** | <img src="images/idastar.gif" width="700" alt="IDASTAR"> |
+
+---
+
+### 3.3. Tìm kiếm cục bộ
+
+Tìm kiếm cục bộ là nhóm thuật toán tập trung cải thiện trạng thái hiện tại thay vì lưu toàn bộ cây tìm kiếm. Nhóm thuật toán này thường được dùng trong các bài toán tối ưu có không gian trạng thái lớn.
+
+Các thuật toán tiêu biểu:
+
+- **Hill Climbing**
+- **Simulated Annealing**
+- **Genetic Algorithm**
+
+Đặc điểm chính:
+
+- Phù hợp với các bài toán tối ưu.
+- Không nhất thiết lưu toàn bộ đường đi từ trạng thái ban đầu.
+- Có thể gặp cực trị cục bộ nếu không có cơ chế thoát khỏi trạng thái kẹt.
+
+#### Giao diện minh họa
+
+| Nhóm thuật toán | Giao diện |
+|----------------|-----------|
+| **SIMPLE HILL CLIMBING** | <img src="images/simple_hill_climbing.gif" width="700" alt="SIMPLE HILL CLIMBING"> |
+| **STEEPEST ASCENT HILL CLIMBING** | <img src="images/steepest_ascent_hill_climbing.gif" width="700" alt="STEEPEST ASCENT HILL CLIMBING"> |
+| **STOCHASTIC HILL CLIMBING** | <img src="images/stochastic_hill_climbing.gif" width="700" alt="STOCHASTIC HILL CLIMBING"> |
 
 ---
 
