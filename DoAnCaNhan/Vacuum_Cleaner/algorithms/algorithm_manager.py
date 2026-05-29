@@ -4,7 +4,10 @@ from algorithms.ids import ids_type1, ids_type2
 from algorithms.ucs import ucs_type1
 from algorithms.greedy_search import greedy
 from algorithms.astar import astar
-
+from algorithms.idastar import idastar
+from algorithms.simple_hill_climbing import simplehillclimbing
+from algorithms.steepest_ascent_hill_climbing import steepestascenthillclimbing
+from algorithms.stochastic_hill_climbing import stochastichillclimbing
 
 ALGORITHM_NAMES = [
     "BFS",
@@ -12,7 +15,11 @@ ALGORITHM_NAMES = [
     "IDS",
     "UCS",
     "Greedy",
-    "A*"
+    "A*",
+    "IDA*",
+    "Simple Hill Climbing",
+    "Steepest Ascent Hill Climbing",
+    "Stochastic Hill Climbing"
 ]
 
 SEARCH_TYPES = [
@@ -22,19 +29,28 @@ SEARCH_TYPES = [
 
 NO_TYPE_ALGORITHMS = [
     "Greedy",
-    "A*"
+    "A*",
+    "IDA*",
+    "Simple Hill Climbing",
+    "Steepest Ascent Hill Climbing",
+    "Stochastic Hill Climbing"
+]
+
+ONE_TYPE_ALGORITHMS = [
+    "UCS"
 ]
 
 def get_algorithm_names():
     return ALGORITHM_NAMES
 
-
 def get_search_types():
     return SEARCH_TYPES
 
-
 def get_no_type_algorithms():
     return NO_TYPE_ALGORITHMS
+
+def get_one_type_algorithms():
+    return ONE_TYPE_ALGORITHMS
 
 
 def solve(initial_floor, algorithm_name, search_type="Dạng 1"):
@@ -65,5 +81,17 @@ def solve(initial_floor, algorithm_name, search_type="Dạng 1"):
 
     if algorithm_name == "A*":
         return astar(initial_floor)
+    
+    if algorithm_name == "IDA*":
+        return idastar(initial_floor)
+    
+    if algorithm_name == "Simple Hill Climbing":
+        return simplehillclimbing(initial_floor)
+    
+    if algorithm_name == "Steepest Ascent Hill Climbing":
+        return steepestascenthillclimbing(initial_floor)
+    
+    if algorithm_name == "Stochastic Hill Climbing":
+        return stochastichillclimbing(initial_floor)
 
     raise ValueError(f"Chưa hỗ trợ thuật toán: {algorithm_name} - {search_type}")
