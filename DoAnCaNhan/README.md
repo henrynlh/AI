@@ -102,7 +102,7 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 | **A\*** | <img src="images/astar.gif" width="700" alt="ASTAR"> |
 | **IDA\*** | <img src="images/idastar.gif" width="700" alt="IDASTAR"> |
 
-### 4.3. Tìm kiếm cục bộ: SIMPLE HILL CLIMBING, STEEPEST ASCENT HILL CLIMBING, STOCHASTIC HILL CLIMBING
+### 4.3. Tìm kiếm cục bộ: SIMPLE HILL CLIMBING, STEEPEST ASCENT HILL CLIMBING, STOCHASTIC HILL CLIMBING, RANDOM RESTART HILL CLIMBING, LOCAL BEAM SEARCH
 
 #### Thành phần chính của bài toán tìm kiếm
 
