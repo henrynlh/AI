@@ -8,6 +8,8 @@ from algorithms.idastar import idastar
 from algorithms.simple_hill_climbing import simplehillclimbing
 from algorithms.steepest_ascent_hill_climbing import steepestascenthillclimbing
 from algorithms.stochastic_hill_climbing import stochastichillclimbing
+from algorithms.random_restart_hill_climbing import randomrestarthillclimbing
+from algorithms.local_beam_search import localbeamsearch
 
 ALGORITHM_NAMES = [
     "BFS",
@@ -19,7 +21,9 @@ ALGORITHM_NAMES = [
     "IDA*",
     "Simple Hill Climbing",
     "Steepest Ascent Hill Climbing",
-    "Stochastic Hill Climbing"
+    "Stochastic Hill Climbing",
+    "Random Restart Hill Climbing",
+    "Local Beam Search"
 ]
 
 SEARCH_TYPES = [
@@ -33,7 +37,9 @@ NO_TYPE_ALGORITHMS = [
     "IDA*",
     "Simple Hill Climbing",
     "Steepest Ascent Hill Climbing",
-    "Stochastic Hill Climbing"
+    "Stochastic Hill Climbing",
+    "Random Restart Hill Climbing",
+    "Local Beam Search"
 ]
 
 ONE_TYPE_ALGORITHMS = [
@@ -93,5 +99,11 @@ def solve(initial_floor, algorithm_name, search_type="Dạng 1"):
     
     if algorithm_name == "Stochastic Hill Climbing":
         return stochastichillclimbing(initial_floor)
+    
+    if algorithm_name == "Random Restart Hill Climbing":
+        return randomrestarthillclimbing(initial_floor)
+    
+    if algorithm_name == "Local Beam Search":
+        return localbeamsearch(initial_floor)
 
     raise ValueError(f"Chưa hỗ trợ thuật toán: {algorithm_name} - {search_type}")
