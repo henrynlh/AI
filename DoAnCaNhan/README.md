@@ -120,6 +120,9 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 | **SIMPLE HILL CLIMBING** | <img src="images/simple_hill_climbing.gif" width="700" alt="SIMPLE HILL CLIMBING"> |
 | **STEEPEST ASCENT HILL CLIMBING** | <img src="images/steepest_ascent_hill_climbing.gif" width="700" alt="STEEPEST ASCENT HILL CLIMBING"> |
 | **STOCHASTIC HILL CLIMBING** | <img src="images/stochastic_hill_climbing.gif" width="700" alt="STOCHASTIC HILL CLIMBING"> |
+| **RANDOM RESTART HILL CLIMBING** | <img src="images/random_restart_hill_climbing.gif" width="700" alt="RANDOM RESTART HILL CLIMBING"> |
+| **LOCAL BEAM SEARCH** | <img src="images/local_beam_search.gif" width="700" alt="LOCAL BEAM SEARCH"> |
+
 
 ---
 
