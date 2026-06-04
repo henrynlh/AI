@@ -143,7 +143,6 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 
 1. Russell, S., & Norvig, P. (2016). Artificial Intelligence: A Modern Approach (3rd ed.). Pearson.
 2. Scaler Topics. (n.d.). Artificial Intelligence Tutorial. Retrieved from https://www.scaler.com/topics/artificial-intelligence-tutorial
-3. GeeksforGeeks. (n.d.). Q-Learning in Python. Retrieved from https://www.geeksforgeeks.org/q-learning-in-python
 
 ---
 
