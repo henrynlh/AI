@@ -10,6 +10,7 @@ from algorithms.steepest_ascent_hill_climbing import steepestascenthillclimbing
 from algorithms.stochastic_hill_climbing import stochastichillclimbing
 from algorithms.random_restart_hill_climbing import randomrestarthillclimbing
 from algorithms.local_beam_search import localbeamsearch
+from algorithms.simulated_annealing import simulatedannealing
 
 ALGORITHM_NAMES = [
     "BFS",
@@ -23,7 +24,8 @@ ALGORITHM_NAMES = [
     "Steepest Ascent Hill Climbing",
     "Stochastic Hill Climbing",
     "Random Restart Hill Climbing",
-    "Local Beam Search"
+    "Local Beam Search",
+    "Simulated Annealing"
 ]
 
 SEARCH_TYPES = [
@@ -39,7 +41,8 @@ NO_TYPE_ALGORITHMS = [
     "Steepest Ascent Hill Climbing",
     "Stochastic Hill Climbing",
     "Random Restart Hill Climbing",
-    "Local Beam Search"
+    "Local Beam Search",
+    "Simulated Annealing"
 ]
 
 ONE_TYPE_ALGORITHMS = [
@@ -105,5 +108,8 @@ def solve(initial_floor, algorithm_name, search_type="Dạng 1"):
     
     if algorithm_name == "Local Beam Search":
         return localbeamsearch(initial_floor)
+    
+    if algorithm_name == "Simulated Annealing":
+            return simulatedannealing(initial_floor)
 
     raise ValueError(f"Chưa hỗ trợ thuật toán: {algorithm_name} - {search_type}")
