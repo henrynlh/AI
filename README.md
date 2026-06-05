@@ -101,9 +101,12 @@ Tìm kiếm cục bộ là nhóm thuật toán tập trung cải thiện trạng
 
 Các thuật toán tiêu biểu:
 
-- **Hill Climbing**
+- **Simple Hill Climbing**
+- **Steepest Ascent Hill Climbing**
+- **Stochastic Hill Climbing**
+- **Random Restart Hill Climbing**
+- **Local Beam Search**
 - **Simulated Annealing**
-- **Genetic Algorithm**
 
 Đặc điểm chính:
 
