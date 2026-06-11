@@ -6,7 +6,6 @@ from core.vacuum_problem import (
     find_vacuum
 )
 
-
 # =========================
 # Tính khoảng cách Manhattan
 # =========================
