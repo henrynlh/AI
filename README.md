@@ -127,6 +127,35 @@ Các thuật toán tiêu biểu:
 
 ---
 
+### 3.4. Tìm kiếm trong môi trường phức tạp: NO OBSERVATION SEARCH, PARTIAL OBSERVATION SEARCH
+
+Tìm kiếm trong môi trường phức tạp là nhóm thuật toán được sử dụng khi tác nhân không biết đầy đủ hoặc không quan sát chính xác toàn bộ trạng thái của môi trường. Thay vì chỉ xử lý một trạng thái duy nhất, thuật toán sẽ làm việc với một tập các trạng thái có thể xảy ra, gọi là trạng thái niềm tin hay belief state.
+
+Trong bài toán máy hút bụi, môi trường phức tạp được mô phỏng bằng cách cho tác nhân không biết chắc chắn toàn bộ vị trí các ô sạch, ô bẩn hoặc chỉ nhìn thấy một phần môi trường. Khi đó, thuật toán phải đồng thời xử lý nhiều trạng thái có thể xảy ra và tìm ra chuỗi hành động giúp tất cả các trạng thái đó đạt đến mục tiêu.
+
+Các thuật toán tiêu biểu:
+
+- **No Observation Search**
+- **Partial Observation Search**
+
+Đặc điểm chính:
+
+- Phù hợp với môi trường không chắc chắn hoặc không quan sát đầy đủ.
+- Thuật toán xử lý trên belief state thay vì một trạng thái đơn.
+- Một hành động chung được áp dụng đồng thời cho nhiều trạng thái có thể xảy ra.
+- Nếu một trạng thái thực hiện được hành động thì nó di chuyển, nếu không thực hiện được thì giữ nguyên.
+- Trạng thái nào đã đạt mục tiêu thì dừng lại và chờ các trạng thái còn lại tiếp tục xử lý.
+- Thuật toán chỉ kết thúc khi tất cả các trạng thái trong belief state đều đạt trạng thái đích.
+
+
+#### Giao diện minh họa
+
+| Nhóm thuật toán | Giao diện |
+|----------------|-----------|
+| **NO OBSERVATION SEARCH** | <img src="images/no_observation_search.gif" width="700" alt="NO OBSERVATION SEARCH"> |
+| **PARTIAL OBSERVATION SEARCH** | <img src="images/partial_observation_search.gif" width="700" alt="PARTIAL OBSERVATION SEARCH"> |
+
+
 ## 4. Tài liệu tham khảo
 
 1. Russell, S., & Norvig, P. (2016). *Artificial Intelligence: A Modern Approach* (3rd ed.). Pearson.
