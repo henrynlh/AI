@@ -4,6 +4,15 @@ import time
 import copy
 
 from core.vacuum_problem import random_floor, format_floor
+from algorithms.no_observation_search import (
+    create_initial_belief_state as create_no_observation_initial_belief_state,
+    count_wrong_cells_in_belief,
+    manhattan_distance_in_belief
+)
+from algorithms.partial_observation_search import (
+    create_initial_belief_state as create_partial_observation_initial_belief_state
+)
+
 from algorithms.algorithm_manager import (
     solve,
     get_algorithm_names,
@@ -26,6 +35,10 @@ class VacuumCleanerUI:
         self.is_running = False
         self.speed = 1000
         self.execution_time = 0
+
+        self.belief_initial_state = None
+        self.belief_actions = []
+        self.observed_positions = set()
 
         self.grid_cache = {}
 
@@ -211,6 +224,18 @@ class VacuumCleanerUI:
         self.on_algorithm_change()
 
     # =========================
+    # KIỂM TRA THUẬT TOÁN BELIEF SEARCH
+    # =========================
+    def is_no_observation_algorithm(self):
+        return self.algorithm_var.get() == "No Observation Search"
+
+    def is_partial_observation_algorithm(self):
+        return self.algorithm_var.get() == "Partial Observation Search"
+
+    def is_belief_algorithm(self):
+        return self.is_no_observation_algorithm() or self.is_partial_observation_algorithm()
+
+    # =========================
     # ẨN / HIỆN DẠNG GIẢI THEO THUẬT TOÁN
     # =========================
     def on_algorithm_change(self, event=None):
@@ -238,6 +263,32 @@ class VacuumCleanerUI:
                 search_type_values = get_search_types()
                 self.search_type_combobox["values"] = search_type_values
                 self.search_type_var.set(search_type_values[0])
+
+        # Khi đã tạo xong phần content thì cập nhật lại 2 khung hiển thị
+        if hasattr(self, "solve_grid_frame"):
+            self.update_panel_titles()
+
+            if self.floor is not None:
+                self.is_running = False
+                self.solution_steps = []
+                self.current_step = -1
+
+                if self.is_no_observation_algorithm():
+                    self.prepare_belief_initial_state()
+                    self.draw_belief_grid(self.solve_grid_frame, self.belief_initial_state)
+                    self.draw_grid(self.result_grid_frame, None)
+                elif self.is_partial_observation_algorithm():
+                    self.observed_positions = set()
+                    self.belief_initial_state = None
+                    self.draw_observable_grid(self.solve_grid_frame, self.floor)
+                    self.draw_grid(self.result_grid_frame, None)
+                else:
+                    self.draw_grid(self.solve_grid_frame, self.floor)
+                    self.draw_grid(self.result_grid_frame, None)
+
+                self.step_label.config(text="Step: 0")
+                self.total_steps_label.config(text="Total steps: 0")
+                self.time_label.config(text="Time: 0s")
 
     def setup_content(self):
         self.content_frame = ttk.Frame(
@@ -313,11 +364,12 @@ class VacuumCleanerUI:
         )
         self.solve_steps_box.grid(row=0, column=0, sticky="nsew", pady=(0, 8))
 
-        ttk.Label(
+        self.solve_title_label = ttk.Label(
             self.solve_steps_box,
             text="Các bước Solve",
             style="PanelTitle.TLabel"
-        ).pack(pady=(8, 4))
+        )
+        self.solve_title_label.pack(pady=(8, 4))
 
         self.solve_grid_frame = tk.Frame(self.solve_steps_box, bg="#FFFFFF")
         self.solve_grid_frame.pack(fill="both", expand=True, padx=8, pady=(0, 8))
@@ -330,11 +382,12 @@ class VacuumCleanerUI:
         )
         self.result_box.grid(row=1, column=0, sticky="nsew", pady=(8, 0))
 
-        ttk.Label(
+        self.result_title_label = ttk.Label(
             self.result_box,
             text="Trạng thái kết quả",
             style="PanelTitle.TLabel"
-        ).pack(pady=(8, 4))
+        )
+        self.result_title_label.pack(pady=(8, 4))
 
         self.result_grid_frame = tk.Frame(self.result_box, bg="#FFFFFF")
         self.result_grid_frame.pack(fill="both", expand=True, padx=8, pady=(0, 8))
@@ -372,6 +425,20 @@ class VacuumCleanerUI:
         self.log_scrollbar.config(command=self.log_text.yview)
         self.log_scrollbar.pack(side="right", fill="y")
         self.log_text.pack(side="left", fill="both", expand=True)
+
+    # =========================
+    # ĐỔI TIÊU ĐỀ 2 KHUNG THEO THUẬT TOÁN
+    # =========================
+    def update_panel_titles(self):
+        if self.is_no_observation_algorithm():
+            self.solve_title_label.config(text="Belief State ban đầu")
+            self.result_title_label.config(text="Các bước Solve")
+        elif self.is_partial_observation_algorithm():
+            self.solve_title_label.config(text="Random State - Ctrl + Click chọn ô nhìn thấy")
+            self.result_title_label.config(text="Belief states có thể xảy ra / Các bước Solve")
+        else:
+            self.solve_title_label.config(text="Các bước Solve")
+            self.result_title_label.config(text="Trạng thái kết quả")
 
     # =========================
     # DRAW GRID
@@ -467,10 +534,258 @@ class VacuumCleanerUI:
                 labels[i][j].config(text=text, bg=bg, fg=fg)
 
     # =========================
+    # VẼ RANDOM STATE CHO PARTIAL OBSERVATION
+    # Người dùng Ctrl + Click để chọn ô được nhìn thấy
+    # =========================
+    def draw_observable_grid(self, parent_frame, floor):
+        if floor is None:
+            self.clear_grid(parent_frame)
+            return
+
+        self.clear_grid(parent_frame)
+
+        rows = len(floor)
+        cols = len(floor[0])
+        width, height, font_size, padx, pady = self.get_cell_style(rows, cols)
+
+        holder = tk.Frame(parent_frame, bg="#FFFFFF")
+        holder.pack(expand=True)
+
+        note = tk.Label(
+            holder,
+            text="Ctrl + Click vào ô để chọn/bỏ chọn ô được nhìn thấy",
+            font=("Helvetica", 10, "bold"),
+            bg="#FFFFFF",
+            fg="#34495E"
+        )
+        note.grid(row=0, column=0, columnspan=cols, pady=(0, 6))
+
+        for i in range(rows):
+            for j in range(cols):
+                value = floor[i][j]
+
+                if value == "V":
+                    bg = "#3498DB"
+                    fg = "white"
+                    text = "V"
+                elif value == 1:
+                    bg = "#E74C3C"
+                    fg = "white"
+                    text = "1"
+                else:
+                    bg = "#2ECC71"
+                    fg = "white"
+                    text = "0"
+
+                if (i, j) in self.observed_positions:
+                    highlight_color = "#F1C40F"
+                    highlight_size = 4
+                else:
+                    highlight_color = "#000000"
+                    highlight_size = 1
+
+                cell = tk.Label(
+                    holder,
+                    text=text,
+                    width=width,
+                    height=height,
+                    font=("Helvetica", font_size, "bold"),
+                    bg=bg,
+                    fg=fg,
+                    relief="solid",
+                    borderwidth=2,
+                    highlightbackground=highlight_color,
+                    highlightcolor=highlight_color,
+                    highlightthickness=highlight_size
+                )
+                cell.grid(row=i + 1, column=j, padx=padx, pady=pady)
+                cell.bind(
+                    "<Control-Button-1>",
+                    lambda event, row=i, col=j: self.toggle_observed_cell(row, col)
+                )
+
+        selected_text = self.get_observed_text()
+        selected_label = tk.Label(
+            holder,
+            text=selected_text,
+            font=("Helvetica", 10),
+            bg="#FFFFFF",
+            fg="#34495E"
+        )
+        selected_label.grid(row=rows + 1, column=0, columnspan=cols, pady=(6, 0))
+
+    # =========================
+    # CHỌN / BỎ CHỌN Ô ĐƯỢC QUAN SÁT
+    # =========================
+    def toggle_observed_cell(self, row, col):
+        position = (row, col)
+
+        if position in self.observed_positions:
+            self.observed_positions.remove(position)
+        else:
+            self.observed_positions.add(position)
+
+        self.draw_observable_grid(self.solve_grid_frame, self.floor)
+
+        # Với Partial Observation Search:
+        # sau khi chọn ô nhìn thấy thì random 2 trạng thái có thể xảy ra
+        # từ các ô đang được nhìn thấy và hiển thị ở khung phía dưới
+        if self.is_partial_observation_algorithm():
+            if len(self.observed_positions) > 0:
+                self.belief_initial_state = create_partial_observation_initial_belief_state(
+                    copy.deepcopy(self.floor),
+                    sorted(list(self.observed_positions)),
+                    state_count=2
+                )
+                self.draw_belief_grid(self.result_grid_frame, self.belief_initial_state, small=True)
+            else:
+                self.belief_initial_state = None
+                self.draw_grid(self.result_grid_frame, None)
+
+        self.log_text.insert(
+            tk.END,
+            "\nCác ô đang được nhìn thấy: " + self.get_observed_text() + "\n"
+        )
+
+        if self.is_partial_observation_algorithm() and self.belief_initial_state is not None:
+            self.log_text.insert(
+                tk.END,
+                "2 belief states có thể xảy ra:\n" + self.format_belief_state(self.belief_initial_state) + "\n"
+            )
+
+        self.log_text.see(tk.END)
+
+    # =========================
+    # FORMAT DANH SÁCH Ô ĐƯỢC QUAN SÁT
+    # =========================
+    def get_observed_text(self):
+        if len(self.observed_positions) == 0:
+            return "Chưa chọn ô nhìn thấy"
+
+        positions = sorted(list(self.observed_positions))
+        texts = []
+
+        for i, j in positions:
+            texts.append(f"({i + 1},{j + 1})")
+
+        return "Ô nhìn thấy: " + ", ".join(texts)
+
+    # =========================
+    # VẼ 1 MA TRẬN NHỎ TRONG BELIEF_STATE
+    # =========================
+    def draw_single_state_grid(self, parent_frame, floor, small=False):
+        rows = len(floor)
+        cols = len(floor[0])
+        width, height, font_size, padx, pady = self.get_cell_style(rows, cols, small)
+
+        grid_holder = tk.Frame(parent_frame, bg="#FFFFFF")
+        grid_holder.pack(expand=True)
+
+        for i in range(rows):
+            for j in range(cols):
+                value = floor[i][j]
+
+                if value == "V":
+                    bg = "#3498DB"
+                    fg = "white"
+                    text = "V"
+                elif value == 1:
+                    bg = "#E74C3C"
+                    fg = "white"
+                    text = "1"
+                else:
+                    bg = "#2ECC71"
+                    fg = "white"
+                    text = "0"
+
+                cell = tk.Label(
+                    grid_holder,
+                    text=text,
+                    width=width,
+                    height=height,
+                    font=("Helvetica", font_size, "bold"),
+                    bg=bg,
+                    fg=fg,
+                    relief="solid",
+                    borderwidth=2
+                )
+                cell.grid(row=i, column=j, padx=padx, pady=pady)
+
+    # =========================
+    # VẼ BELIEF_STATE GỒM 2 MA TRẬN NẰM NGANG
+    # =========================
+    def draw_belief_grid(self, parent_frame, belief_state, small=False):
+        if belief_state is None:
+            self.clear_grid(parent_frame)
+            return
+
+        self.clear_grid(parent_frame)
+
+        holder = tk.Frame(parent_frame, bg="#FFFFFF")
+        holder.pack(expand=True)
+
+        for index, state in enumerate(belief_state):
+            state_frame = tk.Frame(holder, bg="#FFFFFF")
+            state_frame.grid(row=0, column=index, padx=12, pady=6)
+
+            title = tk.Label(
+                state_frame,
+                text=f"State {index + 1}",
+                font=("Helvetica", 11, "bold"),
+                bg="#FFFFFF",
+                fg="#34495E"
+            )
+            title.pack(pady=(0, 3))
+
+            self.draw_single_state_grid(state_frame, state, small=small)
+
+        g_value = count_wrong_cells_in_belief(belief_state)
+        h_value = manhattan_distance_in_belief(belief_state)
+        f_value = g_value + h_value
+
+        info = tk.Label(
+            holder,
+            text=f"g(n)={g_value}   h(n)={h_value}   f(n)={f_value}",
+            font=("Helvetica", 10, "bold"),
+            bg="#FFFFFF",
+            fg="#34495E"
+        )
+        info.grid(row=1, column=0, columnspan=len(belief_state), pady=(6, 0))
+
+    # =========================
+    # FORMAT BELIEF_STATE ĐỂ GHI LOG
+    # =========================
+    def format_belief_state(self, belief_state):
+        text = ""
+
+        for index, state in enumerate(belief_state):
+            text += f"State {index + 1}:\n"
+            text += format_floor(state) + "\n"
+
+        return text
+
+    # =========================
+    # TẠO BELIEF_STATE BAN ĐẦU TỪ FLOOR HIỆN TẠI
+    # =========================
+    def prepare_belief_initial_state(self):
+        if self.belief_initial_state is None:
+            self.belief_initial_state = create_no_observation_initial_belief_state(copy.deepcopy(self.floor))
+
+    # =========================
+    # TẠO 2 BELIEF_STATE BAN ĐẦU CHO PARTIAL OBSERVATION
+    # =========================
+    def prepare_partial_belief_initial_state(self):
+        self.belief_initial_state = create_partial_observation_initial_belief_state(
+            copy.deepcopy(self.floor),
+            sorted(list(self.observed_positions)),
+            state_count=2
+        )
+
+    # =========================
     # BUTTON FUNCTIONS
     # =========================
-    
-        # =========================
+
+    # =========================
     # LOAD TRẠNG THÁI MẶC ĐỊNH
     # =========================
     def load_default_state(self):
@@ -485,6 +800,9 @@ class VacuumCleanerUI:
         self.solution_steps = []
         self.current_step = -1
         self.execution_time = 0
+        self.belief_initial_state = None
+        self.belief_actions = []
+        self.observed_positions = set()
 
         self.row_entry.delete(0, tk.END)
         self.row_entry.insert(0, "3")
@@ -492,17 +810,30 @@ class VacuumCleanerUI:
         self.col_entry.delete(0, tk.END)
         self.col_entry.insert(0, "3")
 
-        self.draw_grid(self.solve_grid_frame, self.floor)
-        self.draw_grid(self.result_grid_frame, None)
+        self.update_panel_titles()
 
         self.log_text.delete(1.0, tk.END)
         self.log_text.insert(tk.END, "Đã tạo trạng thái ban đầu:\n")
-        self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
+
+        if self.is_no_observation_algorithm():
+            self.prepare_belief_initial_state()
+            self.draw_belief_grid(self.solve_grid_frame, self.belief_initial_state)
+            self.draw_grid(self.result_grid_frame, None)
+            self.log_text.insert(tk.END, self.format_belief_state(self.belief_initial_state) + "\n")
+        elif self.is_partial_observation_algorithm():
+            self.draw_observable_grid(self.solve_grid_frame, self.floor)
+            self.draw_grid(self.result_grid_frame, None)
+            self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
+            self.log_text.insert(tk.END, "Ctrl + Click vào ô muốn cho thuật toán nhìn thấy.\n")
+        else:
+            self.draw_grid(self.solve_grid_frame, self.floor)
+            self.draw_grid(self.result_grid_frame, None)
+            self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
 
         self.step_label.config(text="Step: 0")
         self.total_steps_label.config(text="Total steps: 0")
         self.time_label.config(text="Time: 0s")
-    
+
     def random_state(self):
         try:
             m = int(self.row_entry.get())
@@ -519,16 +850,50 @@ class VacuumCleanerUI:
             return
 
         self.is_running = False
-        self.floor = random_floor(m, n)
         self.solution_steps = []
         self.current_step = -1
-
-        self.draw_grid(self.solve_grid_frame, self.floor)
-        self.draw_grid(self.result_grid_frame, None)
+        self.execution_time = 0
+        self.belief_actions = []
+        self.observed_positions = set()
 
         self.log_text.delete(1.0, tk.END)
-        self.log_text.insert(tk.END, "Đã tạo trạng thái ban đầu:\n")
-        self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
+
+        if self.is_no_observation_algorithm():
+            # No Observation Search dùng 2 trạng thái ban đầu
+            # nên Random State sẽ tạo 2 ma trận ngẫu nhiên
+            state_1 = random_floor(m, n)
+            state_2 = random_floor(m, n)
+
+            self.floor = copy.deepcopy(state_1)
+            self.belief_initial_state = [state_1, state_2]
+
+            self.draw_belief_grid(self.solve_grid_frame, self.belief_initial_state)
+            self.draw_grid(self.result_grid_frame, None)
+
+            self.log_text.insert(tk.END, "Đã tạo 2 belief states ban đầu:\n")
+            self.log_text.insert(tk.END, self.format_belief_state(self.belief_initial_state) + "\n")
+        elif self.is_partial_observation_algorithm():
+            # Partial Observation Search dùng 1 random state thật
+            # Sau đó người dùng Ctrl + Click chọn các ô được nhìn thấy
+            self.floor = random_floor(m, n)
+            self.belief_initial_state = None
+            self.observed_positions = set()
+
+            self.draw_observable_grid(self.solve_grid_frame, self.floor)
+            self.draw_grid(self.result_grid_frame, None)
+
+            self.log_text.insert(tk.END, "Đã tạo random state thật cho Partial Observation Search:\n")
+            self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
+            self.log_text.insert(tk.END, "Ctrl + Click vào các ô được nhìn thấy rồi bấm Solve.\n")
+        else:
+            self.floor = random_floor(m, n)
+            self.belief_initial_state = None
+
+            self.draw_grid(self.solve_grid_frame, self.floor)
+            self.draw_grid(self.result_grid_frame, None)
+
+            self.log_text.insert(tk.END, "Đã tạo trạng thái ban đầu:\n")
+            self.log_text.insert(tk.END, format_floor(self.floor) + "\n")
 
         self.step_label.config(text="Step: 0")
         self.total_steps_label.config(text="Total steps: 0")
@@ -561,10 +926,32 @@ class VacuumCleanerUI:
         start_time = time.perf_counter()
 
         try:
-            if search_type is None:
-                result = solve(copy.deepcopy(self.floor), algorithm)
+            if self.is_no_observation_algorithm():
+                self.prepare_belief_initial_state()
+                result = solve(copy.deepcopy(self.belief_initial_state), algorithm)
+            elif self.is_partial_observation_algorithm():
+                if len(self.observed_positions) == 0:
+                    messagebox.showwarning(
+                        "Thông báo",
+                        "Bạn cần Ctrl + Click chọn ít nhất 1 ô được nhìn thấy trước khi Solve."
+                    )
+                    return
+
+                if self.belief_initial_state is None:
+                    self.prepare_partial_belief_initial_state()
+                    self.draw_belief_grid(self.result_grid_frame, self.belief_initial_state, small=True)
+
+                partial_input = {
+                    "actual_state": copy.deepcopy(self.floor),
+                    "observed_positions": sorted(list(self.observed_positions)),
+                    "initial_belief_state": copy.deepcopy(self.belief_initial_state)
+                }
+                result = solve(partial_input, algorithm)
             else:
-                result = solve(copy.deepcopy(self.floor), algorithm, search_type)
+                if search_type is None:
+                    result = solve(copy.deepcopy(self.floor), algorithm)
+                else:
+                    result = solve(copy.deepcopy(self.floor), algorithm, search_type)
 
         except Exception as e:
             messagebox.showerror(
@@ -580,6 +967,10 @@ class VacuumCleanerUI:
         if result is None:
             messagebox.showerror("Kết quả", "Không tìm thấy lời giải.")
             self.log_text.insert(tk.END, "Không tìm thấy lời giải.\n")
+            return
+
+        if self.is_belief_algorithm():
+            self.handle_belief_result(result, log_algorithm_name)
             return
 
         self.solution_steps = result["path"]
@@ -615,6 +1006,50 @@ class VacuumCleanerUI:
 
         self.auto_run_steps()
 
+    # =========================
+    # XỬ LÝ KẾT QUẢ CHO BELIEF SEARCH
+    # =========================
+    def handle_belief_result(self, result, log_algorithm_name):
+        self.solution_steps = result["path"]
+        self.belief_actions = result.get("actions", [])
+        self.current_step = -1
+        self.is_running = True
+
+        if self.is_no_observation_algorithm():
+            self.draw_belief_grid(self.solve_grid_frame, self.solution_steps[0])
+        elif self.is_partial_observation_algorithm():
+            self.draw_observable_grid(self.solve_grid_frame, self.floor)
+
+        self.draw_belief_grid(self.result_grid_frame, self.solution_steps[0], small=True)
+
+        self.total_steps_label.config(
+            text=f"Total steps: {len(self.solution_steps) - 1}"
+        )
+        self.time_label.config(
+            text=f"Time: {self.execution_time:.6f}s"
+        )
+
+        final_belief_state = self.solution_steps[-1]
+
+        self.log_text.insert(
+            tk.END,
+            f"Đã tìm thấy lời giải bằng {log_algorithm_name}.\n"
+        )
+        self.log_text.insert(
+            tk.END,
+            f"Số bước đi: {len(self.solution_steps) - 1}\n"
+        )
+        self.log_text.insert(
+            tk.END,
+            f"Thời gian thực thi: {self.execution_time:.6f}s\n"
+        )
+        self.log_text.insert(
+            tk.END,
+            "\nBelief state kết quả:\n" + self.format_belief_state(final_belief_state) + "\n"
+        )
+
+        self.auto_run_belief_steps()
+
     def auto_run_steps(self):
         if not self.is_running:
             return
@@ -649,6 +1084,60 @@ class VacuumCleanerUI:
                 "Máy hút bụi đã hút sạch toàn bộ ô bẩn."
             )
 
+    # =========================
+    # AUTO RUN CHO BELIEF_STATE
+    # =========================
+    def auto_run_belief_steps(self):
+        if not self.is_running:
+            return
+
+        if self.current_step < len(self.solution_steps) - 1:
+            self.current_step += 1
+            current_belief_state = self.solution_steps[self.current_step]
+
+            self.draw_belief_grid(self.result_grid_frame, current_belief_state, small=True)
+            self.step_label.config(text=f"Step: {self.current_step}")
+
+            g_value = count_wrong_cells_in_belief(current_belief_state)
+            h_value = manhattan_distance_in_belief(current_belief_state)
+            f_value = g_value + h_value
+
+            if self.current_step == 0:
+                action_text = "Start"
+            else:
+                action_text = self.belief_actions[self.current_step - 1]
+
+            self.log_text.insert(
+                tk.END,
+                f"---\nBelief State {self.current_step}:\n"
+            )
+            self.log_text.insert(
+                tk.END,
+                f"Action: {action_text}\n"
+            )
+            self.log_text.insert(
+                tk.END,
+                f"g(n)={g_value}, h(n)={h_value}, f(n)={f_value}\n"
+            )
+            self.log_text.insert(
+                tk.END,
+                self.format_belief_state(current_belief_state) + "\n"
+            )
+            self.log_text.see(tk.END)
+
+            self.root.after(self.speed, self.auto_run_belief_steps)
+        else:
+            self.is_running = False
+            self.log_text.insert(
+                tk.END,
+                "---\nĐã hoàn thành quá trình tìm kiếm belief_state.\n"
+            )
+            self.log_text.see(tk.END)
+            messagebox.showinfo(
+                "Hoàn thành",
+                "Tất cả belief states đã hút sạch toàn bộ ô bẩn."
+            )
+
     def stop(self):
         self.is_running = False
         self.log_text.insert(tk.END, "\nĐã dừng bởi người dùng.\n")
@@ -660,6 +1149,9 @@ class VacuumCleanerUI:
         self.solution_steps = []
         self.current_step = -1
         self.execution_time = 0
+        self.belief_initial_state = None
+        self.belief_actions = []
+        self.observed_positions = set()
 
         self.draw_grid(self.solve_grid_frame, None)
         self.draw_grid(self.result_grid_frame, None)
