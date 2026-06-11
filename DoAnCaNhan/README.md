@@ -126,6 +126,36 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 
 ---
 
+### 4.4. Tìm kiếm trong môi trường phức tạp: NO OBSERVATION SEARCH, PARTIAL OBSERVATION SEARCH
+
+#### Thành phần chính của bài toán tìm kiếm
+
+**Không gian niềm tin**Là tập hợp tất cả các trạng thái vật lý khả dĩ mà tác nhân tin rằng có thể đang xảy ra trong môi trường.
+Trong bài toán máy hút bụi, mỗi trạng thái vật lý là một ma trận m x n, trong đó mỗi ô có thể là 0 nếu sạch, 1 nếu bẩn, và có một vị trí hiện tại của máy hút bụi được ký hiệu là V.
+
+- **Không gian trạng thái**: Là tập hợp các trạng thái vật lý mà tác nhân cho là có thể xảy ra ban đầu. Thông thường là toàn bộ không gian trạng thái (Trong project mô phỏng 2 trạng thái)
+- **Trạng thái ban đầu**: Trong môi trường phức tạp, tác nhân có thể không biết chính xác trạng thái thật của môi trường. Vì vậy, thay vì chỉ xét một trạng thái duy nhất, thuật toán sẽ xét một tập các trạng thái có thể xảy ra, gọi là belief state hay trạng thái niềm tin. Với bài toán này, belief state có thể gồm 2 trạng thái khác nhau được xử lý song song. Mỗi trạng thái biểu diễn một khả năng mà môi trường thực tế có thể đang ở đó.
+- **Trạng thái đích**:Là trạng thái mà ta mong muốn đạt được.
+Trong bài toán này, trạng thái đích là khi tất cả các ô bẩn đã được làm sạch, tức là trong ma trận không còn ô nào có giá trị 1.
+Đối với belief state, thuật toán chỉ kết thúc khi tất cả các trạng thái vật lý có thể xảy ra trong belief state đều đạt trạng thái đích.
+- **Hành động**: Máy hút bụi có thể di chuyển theo 4 hướng: lên, xuống, trái, phải nếu hướng di chuyển đó không vượt ra ngoài biên của ma trận. Khi máy hút bụi di chuyển đến một ô bẩn, ô đó sẽ được làm sạch.
+Trong belief state, một hành động chung được áp dụng đồng thời cho tất cả các trạng thái. Nếu trạng thái nào thực hiện được hành động đó thì nó sẽ di chuyển. Nếu trạng thái nào không thực hiện được thì giữ nguyên. Trạng thái nào đã đạt đích thì dừng lại và chờ các trạng thái còn lại tiếp tục xử lý.
+- **Hàm đánh giá**: Trong project, thuật toán sử dụng A* trên belief state, với:
+g(n) là tổng số ô bẩn còn lại trong các trạng thái của belief state, chỉ đếm ô có giá trị 1, không đếm ô 0.
+h(n) là tổng khoảng cách Manhattan từ vị trí máy hút bụi V đến các ô bẩn trong các trạng thái, chỉ tính các ô có giá trị 1.
+f(n) = g(n) + h(n) là giá trị dùng để lựa chọn belief state ưu tiên mở rộng tiếp theo.
+- **Solution**: Solution không còn đơn thuần là chuỗi trạng thái của một môi trường duy nhất, mà là chuỗi các belief state từ ban đầu đến đích.
+Mỗi bước trong solution thể hiện việc áp dụng một hành động chung lên nhiều trạng thái có thể xảy ra. Thuật toán được xem là thành công khi tất cả các trạng thái trong belief state đều đã sạch hết bụi.
+
+#### Hình ảnh GIF minh họa
+
+| Nhóm thuật toán | Giao diện |
+|----------------|-----------|
+| **NO OBSERVATION SEARCH** | <img src="images/no_observation_search.gif" width="700" alt="NO OBSERVATION SEARCH"> |
+| **PARTIAL OBSERVATION SEARCH** | <img src="images/partial_observation_search.gif" width="700" alt="PARTIAL OBSERVATION SEARCH"> |
+
+---
+
 ## 5. Kết luận
 
 **Đồ án đã đạt được những kết quả sau**: 
