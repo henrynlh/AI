@@ -67,8 +67,6 @@ Các thuật toán tiêu biểu:
 | **IDS_Dạng 2** | <img src="images/ids_d2.gif" width="700" alt="IDS DẠNG 2"> |
 | **UCS_Dạng 1** | <img src="images/ucs_d1.gif" width="700" alt="UCS DẠNG 1"> |
 
----
-
 ### 3.2. Tìm kiếm có thông tin
 
 Tìm kiếm có thông tin sử dụng thêm hàm heuristic để đánh giá trạng thái và ưu tiên mở rộng những trạng thái có khả năng dẫn đến lời giải tốt hơn.
@@ -92,8 +90,6 @@ Các thuật toán tiêu biểu:
 | **GREEDY** | <img src="images/greedy.gif" width="700" alt="GREEDY"> |
 | **A\*** | <img src="images/astar.gif" width="700" alt="ASTAR"> |
 | **IDA\*** | <img src="images/idastar.gif" width="700" alt="IDASTAR"> |
-
----
 
 ### 3.3. Tìm kiếm cục bộ
 
@@ -125,9 +121,7 @@ Các thuật toán tiêu biểu:
 | **LOCAL BEAM SEARCH** | <img src="images/local_beam_search.gif" width="700" alt="LOCAL BEAM SEARCH"> |
 | **SIMULATED ANNEALING** | <img src="images/simulated_annealing.gif" width="700" alt="SIMULATED ANNEALING"> |
 
----
-
-### 3.4. Tìm kiếm trong môi trường phức tạp: NO OBSERVATION SEARCH, PARTIAL OBSERVATION SEARCH
+### 3.4. Tìm kiếm trong môi trường phức tạp: NO OBSERVATION SEARCH, PARTIAL OBSERVATION SEARCH, AND-OR-GRAPH SEARCH
 
 Tìm kiếm trong môi trường phức tạp là nhóm thuật toán được sử dụng khi tác nhân không biết đầy đủ hoặc không quan sát chính xác toàn bộ trạng thái của môi trường. Thay vì chỉ xử lý một trạng thái duy nhất, thuật toán sẽ làm việc với một tập các trạng thái có thể xảy ra, gọi là trạng thái niềm tin hay belief state.
 
@@ -137,14 +131,16 @@ Các thuật toán tiêu biểu:
 
 - **No Observation Search**
 - **Partial Observation Search**
+- **AND-OR-GRAPH Search**
 
 Đặc điểm chính:
 
 - Phù hợp với môi trường không chắc chắn hoặc không quan sát đầy đủ.
 - Thuật toán xử lý trên belief state thay vì một trạng thái đơn.
 - Một hành động chung được áp dụng đồng thời cho nhiều trạng thái có thể xảy ra.
-- Nếu một trạng thái thực hiện được hành động thì nó di chuyển, nếu không thực hiện được thì giữ nguyên.
-- Trạng thái nào đã đạt mục tiêu thì dừng lại và chờ các trạng thái còn lại tiếp tục xử lý.
+- Nếu một trạng thái thực hiện được hành động thì trạng thái đó sẽ di chuyển theo hành động tương ứng.
+- Nếu một trạng thái không thực hiện được hành động thì trạng thái đó giữ nguyên.
+- Nếu một trạng thái đã đạt mục tiêu thì trạng thái đó dừng lại và chờ các trạng thái còn lại tiếp tục xử lý.
 - Thuật toán chỉ kết thúc khi tất cả các trạng thái trong belief state đều đạt trạng thái đích.
 
 
@@ -154,7 +150,35 @@ Các thuật toán tiêu biểu:
 |----------------|-----------|
 | **NO OBSERVATION SEARCH** | <img src="images/no_observation_search.gif" width="700" alt="NO OBSERVATION SEARCH"> |
 | **PARTIAL OBSERVATION SEARCH** | <img src="images/partial_observation_search.gif" width="700" alt="PARTIAL OBSERVATION SEARCH"> |
+| **AND-OR-GRAPH SEARCH** | <img src="images/and_or_graph_search.gif" width="700" alt="AND-OR-GRAPH SEARCH"> |
 
+## 3.5. Các thuật toán tìm kiếm ràng buộc: BACKTRACKING, FORWARD CHECKING
+
+Tìm kiếm ràng buộc là nhóm thuật toán được sử dụng cho các bài toán cần gán giá trị cho nhiều biến sao cho thỏa mãn một tập các điều kiện cho trước. Thay vì chỉ tìm đường đi từ trạng thái đầu đến trạng thái đích, thuật toán tập trung vào việc xây dựng một phép gán hợp lệ cho toàn bộ bài toán.
+
+Trong bài toán tô màu bản đồ, mỗi vùng trên bản đồ được xem là một biến cần được gán màu. Mục tiêu là tô màu toàn bộ bản đồ sao cho hai vùng kề nhau không được có cùng màu. Các màu được sử dụng trong chương trình gồm: Đỏ, Vàng, Xanh lá và Xanh dương.
+
+Các thuật toán tiêu biểu:
+
+- **Backtracking**
+- **Forward Checking**
+
+Đặc điểm chính:
+
+- Phù hợp với các bài toán có nhiều biến và nhiều ràng buộc.
+- Thuật toán làm việc trên tập các phép gán màu cho từng vùng trên bản đồ.
+- Mỗi hành động tương ứng với việc chọn một vùng chưa tô và gán cho vùng đó một màu.
+- Sau mỗi lần gán màu, thuật toán kiểm tra xem màu vừa chọn có vi phạm ràng buộc với các vùng kề hay không.
+- Thuật toán chỉ kết thúc khi tất cả các vùng trên bản đồ đều được tô màu và không có hai vùng kề nhau nào bị trùng màu.
+
+#### Giao diện minh họa
+
+| Nhóm thuật toán | Giao diện |
+|----------------|-----------|
+| **BACKTRACKING** | <img src="images/backtracking.gif" width="700" alt="BACKTRACKING"> |
+| **FORWARD CHECKING** | <img src="images/forward_checking.gif" width="700" alt="FORWARD CHECKING"> |
+
+---
 
 ## 4. Tài liệu tham khảo
 
