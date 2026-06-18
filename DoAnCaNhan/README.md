@@ -124,9 +124,7 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 | **LOCAL BEAM SEARCH** | <img src="images/local_beam_search.gif" width="700" alt="LOCAL BEAM SEARCH"> |
 | **SIMULATED ANNEALING** | <img src="images/simulated_annealing.gif" width="700" alt="SIMULATED ANNEALING"> |
 
----
-
-### 4.4. Tìm kiếm trong môi trường phức tạp: NO OBSERVATION SEARCH, PARTIAL OBSERVATION SEARCH
+### 4.4. Tìm kiếm trong môi trường phức tạp: NO OBSERVATION SEARCH, PARTIAL OBSERVATION SEARCH, AND-OR-GRAPH SEARCH
 
 #### Thành phần chính của bài toán tìm kiếm
 
@@ -153,6 +151,27 @@ Mỗi bước trong solution thể hiện việc áp dụng một hành động 
 |----------------|-----------|
 | **NO OBSERVATION SEARCH** | <img src="images/no_observation_search.gif" width="700" alt="NO OBSERVATION SEARCH"> |
 | **PARTIAL OBSERVATION SEARCH** | <img src="images/partial_observation_search.gif" width="700" alt="PARTIAL OBSERVATION SEARCH"> |
+| **AND-OR-GRAPH SEARCH** | <img src="images/and_or_graph_search.gif" width="700" alt="AND-OR-GRAPH SEARCH"> |
+
+### 4.5. Các thuật toán tìm kiếm ràng buộc: BACKTRACKING, FORWARD CHECKING
+
+#### Thành phần chính của bài toán tìm kiếm
+
+**Biến**: Mỗi biến đại diện cho một vùng trên bản đồ cần được tô màu. Trong bài toán tô màu bản đồ, các biến là các khu vực hoặc địa phương trên bản đồ. Mục tiêu của bài toán là gán màu cho tất cả các vùng sao cho các vùng kề nhau không bị trùng màu.
+**Miền giá trị**: Miền giá trị là tập hợp các màu có thể gán cho mỗi vùng. Trong chương trình mô phỏng, mỗi vùng có thể nhận một trong bốn màu: Đỏ, Vàng, Xanh lá, Xanh dương.
+
+- **Ràng buộc**: Ràng buộc là các điều kiện mà việc tô màu phải thỏa mãn. Trong bài toán tô màu bản đồ, ràng buộc quan trọng nhất là: Hai vùng kề nhau không được tô cùng một màu.
+- **Trạng thái**: Một trạng thái trong bài toán là tập hợp các phép gán màu hiện tại cho một số hoặc tất cả các vùng trên bản đồ. Các vùng còn lại chưa được gán màu. Khi thuật toán tiếp tục chạy, nó sẽ chọn một vùng chưa tô và thử gán một màu hợp lệ cho vùng đó. Một trạng thái hoàn chỉnh là trạng thái mà tất cả các vùng trên bản đồ đều đã được tô màu.
+- **Hành động**: Hành động trong bài toán là gán một màu cho một vùng chưa được tô. Sau mỗi hành động, thuật toán sẽ kiểm tra xem phép gán đó có vi phạm ràng buộc hay không. Nếu màu vừa gán bị trùng với màu của vùng kề, thuật toán sẽ loại bỏ lựa chọn đó hoặc quay lui để thử màu khác.
+- **Hàm mục tiêu**: Hàm mục tiêu dùng để kiểm tra bài toán đã được giải xong hay chưa. Trong bài toán tô màu bản đồ, mục tiêu là tìm được một cách gán màu hoàn chỉnh sao cho: Tất cả các vùng đều được tô màu và không có hai vùng kề nhau nào có cùng màu. Khi hai điều kiện này được thỏa mãn, thuật toán đã tìm được lời giải hợp lệ.
+- **Solution**: Lời giải là một phép gán màu hoàn chỉnh cho toàn bộ bản đồ. Mỗi vùng được gán đúng một màu và không vi phạm ràng buộc giữa các vùng kề nhau.
+
+#### Hình ảnh GIF minh họa
+
+| Nhóm thuật toán | Giao diện |
+|----------------|-----------|
+| **BACKTRACKING** | <img src="images/backtracking.gif" width="700" alt="BACKTRACKING"> |
+| **FORWARD CHECKING** | <img src="images/forward_checking.gif" width="700" alt="FORWARD CHECKING"> |
 
 ---
 
