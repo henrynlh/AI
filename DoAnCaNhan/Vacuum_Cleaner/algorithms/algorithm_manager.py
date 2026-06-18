@@ -13,6 +13,7 @@ from algorithms.local_beam_search import localbeamsearch
 from algorithms.simulated_annealing import simulatedannealing
 from algorithms.no_observation_search import noobservationastar
 from algorithms.partial_observation_search import partialobservationsearch
+from algorithms.and_or_graph_search import andorgraphsearch
 
 ALGORITHM_NAMES = [
     "BFS",
@@ -29,7 +30,11 @@ ALGORITHM_NAMES = [
     "Local Beam Search",
     "Simulated Annealing",
     "No Observation Search",
-    "Partial Observation Search"
+    "Partial Observation Search",
+    "AND-OR-GRAPH Search",
+    "Map Coloring Backtracking",
+    "Forward Checking"
+
 ]
 
 SEARCH_TYPES = [
@@ -48,7 +53,10 @@ NO_TYPE_ALGORITHMS = [
     "Local Beam Search",
     "Simulated Annealing",
     "No Observation Search",
-    "Partial Observation Search"
+    "Partial Observation Search",
+    "AND-OR-GRAPH Search",
+    "Map Coloring Backtracking",
+    "Forward Checking"
 ]
 
 ONE_TYPE_ALGORITHMS = [
@@ -123,5 +131,8 @@ def solve(initial_floor, algorithm_name, search_type="Dạng 1"):
 
     if algorithm_name == "Partial Observation Search":
         return partialobservationsearch(initial_floor)
+    
+    if algorithm_name == "AND-OR-GRAPH Search":
+        return andorgraphsearch(initial_floor)
 
     raise ValueError(f"Chưa hỗ trợ thuật toán: {algorithm_name} - {search_type}")
