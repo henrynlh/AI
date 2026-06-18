@@ -4,6 +4,8 @@ import time
 import copy
 
 from core.vacuum_problem import random_floor, format_floor
+from ui.map_coloring_ui import MapColoringUI
+
 from algorithms.no_observation_search import (
     create_initial_belief_state as create_no_observation_initial_belief_state,
     count_wrong_cells_in_belief,
@@ -41,13 +43,37 @@ class VacuumCleanerUI:
         self.observed_positions = set()
 
         self.grid_cache = {}
+        
+        self.map_coloring_window = None
+        self.map_coloring_app = None
 
         self.setup_styles()
         self.setup_ui()
 
         # Khởi tạo trạng thái ban đầu mặc định
         self.load_default_state()
+        
 
+    def open_map_coloring_window(self, algorithm_name):
+        if self.map_coloring_window is not None and self.map_coloring_window.winfo_exists():
+            self.map_coloring_app.set_algorithm(algorithm_name)
+            self.map_coloring_window.lift()
+            self.map_coloring_window.focus_force()
+            return
+
+        self.map_coloring_window = tk.Toplevel(self.root)
+        self.map_coloring_app = MapColoringUI(
+            self.map_coloring_window,
+            algorithm_name
+        )
+
+        def on_close():
+            self.map_coloring_window.destroy()
+            self.map_coloring_window = None
+            self.map_coloring_app = None
+
+        self.map_coloring_window.protocol("WM_DELETE_WINDOW", on_close)
+        
     # =========================
     # STYLE
     # =========================
@@ -240,6 +266,11 @@ class VacuumCleanerUI:
     # =========================
     def on_algorithm_change(self, event=None):
         algorithm = self.algorithm_var.get()
+        
+        # Nếu chọn thuật toán Backtracking hay Forward Checking
+        # thì mở cửa sổ mô phỏng tô màu bản đồ ngay
+        if algorithm in ["Map Coloring Backtracking", "Forward Checking"]:
+            self.open_map_coloring_window(algorithm)
 
         # Thuật toán không chia dạng thì ẩn Dạng giải
         if algorithm in get_no_type_algorithms():
@@ -900,14 +931,19 @@ class VacuumCleanerUI:
         self.time_label.config(text="Time: 0s")
 
     def solve_problem(self):
+        
+        algorithm = self.algorithm_var.get()
+
+        if algorithm in ["Map Coloring Backtracking", "Forward Checking"]:
+            self.open_map_coloring_window(algorithm)
+            return
+
         if self.floor is None:
             messagebox.showwarning(
                 "Thông báo",
                 "Bạn cần bấm Random State trước."
             )
             return
-
-        algorithm = self.algorithm_var.get()
 
         # Thuật toán không chia dạng thì không lấy search_type
         if algorithm in get_no_type_algorithms():
