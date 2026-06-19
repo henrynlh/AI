@@ -152,7 +152,7 @@ Các thuật toán tiêu biểu:
 | **PARTIAL OBSERVATION SEARCH** | <img src="images/partial_observation_search.gif" width="700" alt="PARTIAL OBSERVATION SEARCH"> |
 | **AND-OR-GRAPH SEARCH** | <img src="images/and_or_graph_search.gif" width="700" alt="AND-OR-GRAPH SEARCH"> |
 
-## 3.5. Các thuật toán tìm kiếm ràng buộc: BACKTRACKING, FORWARD CHECKING
+## 3.5. Các thuật toán tìm kiếm ràng buộc: BACKTRACKING, FORWARD CHECKING, AC-3, MIN CONFLICTS
 
 Tìm kiếm ràng buộc là nhóm thuật toán được sử dụng cho các bài toán cần gán giá trị cho nhiều biến sao cho thỏa mãn một tập các điều kiện cho trước. Thay vì chỉ tìm đường đi từ trạng thái đầu đến trạng thái đích, thuật toán tập trung vào việc xây dựng một phép gán hợp lệ cho toàn bộ bài toán.
 
@@ -162,6 +162,8 @@ Các thuật toán tiêu biểu:
 
 - **Backtracking**
 - **Forward Checking**
+- **AC-3**
+- **Min Conflicts**
 
 Đặc điểm chính:
 
@@ -175,8 +177,10 @@ Các thuật toán tiêu biểu:
 
 | Nhóm thuật toán | Giao diện |
 |----------------|-----------|
-| **BACKTRACKING** | <img src="images/backtracking.gif" width="700" alt="BACKTRACKING"> |
-| **FORWARD CHECKING** | <img src="images/forward_checking.gif" width="700" alt="FORWARD CHECKING"> |
+| **BACKTRACKING** | <img src="images/backtracking.gif" width="650" alt="BACKTRACKING"> |
+| **FORWARD CHECKING** | <img src="images/forward_checking.gif" width="650" alt="FORWARD CHECKING"> |
+| **AC-3** | <img src="images/ac_3.gif" width="650" alt="AC-3"> |
+| **MIN CONFLICTS** | <img src="images/min_conflicts.gif" width="650" alt="MIN CONFLICTS"> |
 
 ---
 
