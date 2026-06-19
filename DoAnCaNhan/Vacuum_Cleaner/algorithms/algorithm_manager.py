@@ -33,7 +33,9 @@ ALGORITHM_NAMES = [
     "Partial Observation Search",
     "AND-OR-GRAPH Search",
     "Map Coloring Backtracking",
-    "Forward Checking"
+    "Forward Checking",
+    "AC-3",
+    "Min-Conflicts"
 
 ]
 
@@ -56,7 +58,9 @@ NO_TYPE_ALGORITHMS = [
     "Partial Observation Search",
     "AND-OR-GRAPH Search",
     "Map Coloring Backtracking",
-    "Forward Checking"
+    "Forward Checking",
+    "AC-3",
+    "Min-Conflicts"
 ]
 
 ONE_TYPE_ALGORITHMS = [
