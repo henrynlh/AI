@@ -269,7 +269,7 @@ class VacuumCleanerUI:
         
         # Nếu chọn thuật toán Backtracking hay Forward Checking
         # thì mở cửa sổ mô phỏng tô màu bản đồ ngay
-        if algorithm in ["Map Coloring Backtracking", "Forward Checking"]:
+        if algorithm in ["Map Coloring Backtracking", "Forward Checking", "AC-3", "Min-Conflicts"]:
             self.open_map_coloring_window(algorithm)
 
         # Thuật toán không chia dạng thì ẩn Dạng giải

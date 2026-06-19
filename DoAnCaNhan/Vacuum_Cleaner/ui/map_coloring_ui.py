@@ -12,7 +12,8 @@ from algorithms.backtracking import (
 )
 
 from algorithms.forward_checking import forwardchecking
-
+from algorithms.ac_3 import ac3search
+from algorithms.min_conflicts import minconflicts
 
 # =========================
 # UI CHUNG CHO MAP COLORING CSP
@@ -20,12 +21,7 @@ from algorithms.forward_checking import forwardchecking
 # Dùng chung cho:
 # - Map Coloring Backtracking
 # - Forward Checking
-#
-# Luồng:
-# - Chọn thuật toán trong Vacuum UI thì cửa sổ này hiện ngay
-# - Cửa sổ chưa chạy ngay
-# - Bấm Solve thì chạy đúng thuật toán đã chọn
-# - Chạy xong giữ nguyên màn hình để quan sát
+# - AC-3
 # =========================
 class MapColoringUI:
     def __init__(self, root, algorithm_name="Map Coloring Backtracking"):
@@ -173,7 +169,6 @@ class MapColoringUI:
         self.body_frame.columnconfigure(1, weight=4, minsize=520)
         self.body_frame.rowconfigure(0, weight=1)
 
-        # LEFT PANEL
         self.left_panel = tk.Frame(
             self.body_frame,
             bg="#FFFFFF",
@@ -195,7 +190,6 @@ class MapColoringUI:
         )
         self.canvas.pack(fill="both", expand=True, padx=8, pady=8)
 
-        # RIGHT PANEL
         self.right_panel = tk.Frame(
             self.body_frame,
             bg="#FFFFFF",
@@ -230,7 +224,6 @@ class MapColoringUI:
         self.log_scrollbar.pack(side="right", fill="y")
         self.log_text.pack(side="left", fill="both", expand=True)
 
-        # DOMAIN PANEL
         ttk.Label(
             self.right_panel,
             text="Domain hiện tại",
@@ -248,7 +241,6 @@ class MapColoringUI:
         )
         self.domain_text.pack(fill="x", padx=10, pady=(0, 10))
 
-        # BUTTONS
         self.button_frame = ttk.Frame(self.main_frame, style="Content.TFrame")
         self.button_frame.pack(fill="x", pady=(0, 5))
 
@@ -342,25 +334,15 @@ class MapColoringUI:
         self.log_text.delete(1.0, tk.END)
         self.domain_text.delete(1.0, tk.END)
 
-        self.log_text.insert(
-            tk.END,
-            f"Đã chọn thuật toán: {self.algorithm_name}\n"
-        )
-        self.log_text.insert(
-            tk.END,
-            "Bấm Solve để bắt đầu mô phỏng.\n"
-        )
+        self.log_text.insert(tk.END, f"Đã chọn thuật toán: {self.algorithm_name}\n")
+        self.log_text.insert(tk.END, "Bấm Solve để bắt đầu mô phỏng.\n")
 
         if self.algorithm_name == "Forward Checking":
-            self.log_text.insert(
-                tk.END,
-                "Forward Checking sẽ hiển thị thêm domain hiện tại.\n"
-            )
+            self.log_text.insert(tk.END, "Forward Checking sẽ hiển thị thêm domain hiện tại.\n")
+        elif self.algorithm_name == "AC-3":
+            self.log_text.insert(tk.END, "AC-3 sẽ hiển thị Q, Arc và bước revise theo kiểu giải tay.\n")
         else:
-            self.log_text.insert(
-                tk.END,
-                "Backtracking thường chỉ thử màu và quay lui khi bị kẹt.\n"
-            )
+            self.log_text.insert(tk.END, "Backtracking thường chỉ thử màu và quay lui khi bị kẹt.\n")
 
         self.draw_map({})
 
@@ -480,6 +462,12 @@ class MapColoringUI:
         if self.algorithm_name == "Forward Checking":
             return forwardchecking()
 
+        if self.algorithm_name == "AC-3":
+            return ac3search()
+        
+        if self.algorithm_name == "Min-Conflicts":
+           return minconflicts(max_steps=100)
+
         return mapcoloringbacktracking()
 
     # =========================
@@ -511,20 +499,13 @@ class MapColoringUI:
         self.log_text.insert(tk.END, "Ràng buộc: hai vùng kề nhau không được cùng màu.\n")
 
         if self.algorithm_name == "Forward Checking":
-            self.log_text.insert(
-                tk.END,
-                "Cơ chế: sau khi gán màu, xóa màu đó khỏi domain của vùng kề chưa tô.\n"
-            )
+            self.log_text.insert(tk.END, "Cơ chế: sau khi gán màu, xóa màu đó khỏi domain của vùng kề chưa tô.\n")
+        elif self.algorithm_name == "AC-3":
+            self.log_text.insert(tk.END, "Cơ chế: Q chứa Arc, xét từng Arc và gọi RM-INCONSISTENT-VALUES.\n")
         else:
-            self.log_text.insert(
-                tk.END,
-                "Cơ chế: thử màu, nếu nhánh sau thất bại thì quay lui.\n"
-            )
+            self.log_text.insert(tk.END, "Cơ chế: thử màu, nếu nhánh sau thất bại thì quay lui.\n")
 
-        self.log_text.insert(
-            tk.END,
-            f"Thời gian thực thi thuật toán: {self.execution_time:.6f}s\n\n"
-        )
+        self.log_text.insert(tk.END, f"Thời gian thực thi thuật toán: {self.execution_time:.6f}s\n\n")
         self.log_text.see(tk.END)
 
         self.is_running = True
@@ -537,10 +518,7 @@ class MapColoringUI:
         self.domain_text.delete(1.0, tk.END)
 
         if domains is None:
-            self.domain_text.insert(
-                tk.END,
-                "Backtracking thường không lưu domain cắt giảm.\n"
-            )
+            self.domain_text.insert(tk.END, "Backtracking thường không lưu domain cắt giảm.\n")
             return
 
         for region in sorted(domains.keys()):
@@ -558,6 +536,9 @@ class MapColoringUI:
         current_color = step["color"]
         step_type = step["type"]
         removed_values = step.get("removed_values", [])
+        arc = step.get("arc")
+        queue = step.get("queue", [])
+        manual_log = step.get("manual_log", [])
 
         self.draw_map(
             assignment,
@@ -571,39 +552,35 @@ class MapColoringUI:
         self.step_label.config(text=f"Step: {self.current_step + 1}")
         self.status_label.config(text=f"Status: {step_type}")
 
-        self.log_text.insert(
-            tk.END,
-            f"---\nBước {self.current_step + 1}: {step['message']}\n"
-        )
+        self.log_text.insert(tk.END, f"---\nBước {self.current_step + 1}: {step['message']}\n")
 
-        if current_region is not None:
-            self.log_text.insert(
-                tk.END,
-                f"Vùng đang xét: {REGIONS[current_region]}\n"
-            )
+        if len(manual_log) > 0:
+            for line in manual_log:
+                self.log_text.insert(tk.END, line + "\n")
+        else:
+            if arc is not None:
+                xi, xj = arc
+                self.log_text.insert(tk.END, f"Arc đang xét: ({REGIONS[xi]}, {REGIONS[xj]})\n")
+                self.log_text.insert(tk.END, f"Số arc còn trong Q: {len(queue)}\n")
 
-        if current_color is not None:
-            self.log_text.insert(
-                tk.END,
-                f"Màu đang thử/gán: {current_color}\n"
-            )
+            if current_region is not None:
+                self.log_text.insert(tk.END, f"Vùng đang xét: {REGIONS[current_region]}\n")
 
-        if len(removed_values) > 0:
-            self.log_text.insert(tk.END, "Miền bị cắt:\n")
+            if current_color is not None:
+                self.log_text.insert(tk.END, f"Màu đang thử/gán: {current_color}\n")
 
-            for item in removed_values:
-                neighbor = item[0]
-                removed_color = item[1]
-                self.log_text.insert(
-                    tk.END,
-                    f"  - Xóa {removed_color} khỏi domain của {REGIONS[neighbor]}\n"
-                )
+            if len(removed_values) > 0:
+                self.log_text.insert(tk.END, "Miền bị cắt:\n")
 
-        self.log_text.insert(
-            tk.END,
-            f"Assignment hiện tại: {self.format_assignment(assignment)}\n"
-        )
+                for item in removed_values:
+                    region = item[0]
+                    removed_color = item[1]
+                    self.log_text.insert(
+                        tk.END,
+                        f"  - Xóa {removed_color} khỏi domain của {REGIONS[region]}\n"
+                    )
 
+        self.log_text.insert(tk.END, f"Assignment hiện tại: {self.format_assignment(assignment)}\n")
         self.log_text.see(tk.END)
 
     # =========================
@@ -623,13 +600,7 @@ class MapColoringUI:
             self.is_running = False
             self.status_label.config(text="Status: Finished")
 
-            self.log_text.insert(
-                tk.END,
-                "\n---\nĐã hoàn thành thuật toán.\n"
-            )
-            self.log_text.insert(
-                tk.END,
-            )
+            self.log_text.insert(tk.END, "\n---\nĐã hoàn thành thuật toán.\n")
             self.log_text.see(tk.END)
 
     # =========================
@@ -664,5 +635,5 @@ class MapColoringUI:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = MapColoringUI(root, "Map Coloring Backtracking")
+    app = MapColoringUI(root, "AC-3")
     root.mainloop()
