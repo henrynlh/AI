@@ -656,7 +656,7 @@ Vacuum_Cleaner/reports/benchmark_charts/
 | <img src="Vacuum_Cleaner/reports/benchmark_charts/09_adversarial_runtime_depth5.png" width="700" alt="Thời gian chạy nhóm đối kháng">         | Thời gian chạy của nhóm đối kháng                               |
 | <img src="Vacuum_Cleaner/reports/benchmark_charts/10_adversarial_expanded_nodes_by_depth.png" width="700" alt="Số node mở rộng theo độ sâu">  | Số node mở rộng theo độ sâu của nhóm đối kháng                  |
 
-### 9.5. Lưu ý khi đọc biểu đồ đối kháng
+#### Lưu ý:
 
 Trong biểu đồ số node mở rộng theo độ sâu, đường **Minimax** có thể trùng hoặc gần trùng với **Expectimax**. Nguyên nhân là cả hai thuật toán đều duyệt gần như toàn bộ cây trò chơi ở cùng một độ sâu.
 
@@ -665,8 +665,6 @@ Trong biểu đồ số node mở rộng theo độ sâu, đường **Minimax** 
 - **Minimax** giả định đối thủ chơi tối ưu.
 - **Expectimax** tính giá trị kỳ vọng tại các chance node.
 - **Alpha-Beta Pruning** có cơ chế cắt tỉa nên thường mở rộng ít node hơn.
-
-Vì vậy, biểu đồ đối kháng vẫn có ý nghĩa khi dùng để chứng minh Alpha-Beta tiết kiệm số node mở rộng hơn so với Minimax và Expectimax.
 
 ---
 
