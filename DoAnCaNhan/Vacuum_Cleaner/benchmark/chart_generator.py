@@ -285,4 +285,3 @@ if __name__ == "__main__":
     print("Đã tạo biểu đồ:")
     for path in paths:
         print("-", path)
-

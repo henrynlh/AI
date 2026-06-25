@@ -512,4 +512,3 @@ def run_all_benchmarks(output_csv=DEFAULT_OUTPUT_CSV, local_run_count=10, advers
 if __name__ == "__main__":
     csv_path = run_all_benchmarks()
     print("Đã xuất benchmark:", csv_path)
-
