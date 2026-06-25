@@ -5,10 +5,6 @@
 # - Minimax
 # - Alpha-Beta Pruning
 # - Expectimax
-#
-# Trong đồ án cá nhân, để mô phỏng rõ cây trò chơi và tránh không gian trạng thái
-# quá lớn của caro 5 quân thắng, visualizer dùng bàn cờ caro 3x3.
-# Cách này tương đương Tic-Tac-Toe, rất phù hợp để minh họa thuật toán đối kháng.
 # =========================
 
 
