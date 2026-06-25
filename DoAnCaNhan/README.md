@@ -644,16 +644,16 @@ Vacuum_Cleaner/reports/benchmark_charts/
 
 | Biểu đồ                                                                                                                                                  | Ý nghĩa                                                         |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/01_vacuum_solution_steps.png" width="700" alt="Số bước lời giải">                           | So sánh số bước lời giải của các thuật toán trên Vacuum Cleaner |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/02_vacuum_expanded_nodes.png" width="700" alt="Số node mở rộng">                            | So sánh số node mở rộng                                         |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/03_vacuum_runtime_ms.png" width="700" alt="Thời gian chạy">                                 | So sánh thời gian chạy                                          |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/04_local_success_rate.png" width="700" alt="Tỷ lệ thành công tìm kiếm cục bộ">              | Tỷ lệ thành công của nhóm tìm kiếm cục bộ                       |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/05_local_final_dirty_cells.png" width="700" alt="Số ô bẩn còn lại trung bình">              | Số ô bẩn còn lại trung bình của nhóm tìm kiếm cục bộ            |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/06_csp_backtracks.png" width="700" alt="Số lần quay lui CSP">                               | Số lần quay lui trong nhóm CSP                                  |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/07_csp_assignments.png" width="700" alt="Số lần gán màu CSP">                               | Số lần gán màu trong nhóm CSP                                   |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/08_adversarial_expanded_nodes_depth5.png" width="700" alt="Số node mở rộng nhóm đối kháng"> | Số node mở rộng của Minimax, Alpha-Beta và Expectimax           |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/09_adversarial_runtime_depth5.png" width="700" alt="Thời gian chạy nhóm đối kháng">         | Thời gian chạy của nhóm đối kháng                               |
-| <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/10_adversarial_expanded_nodes_by_depth.png" width="700" alt="Số node mở rộng theo độ sâu">  | Số node mở rộng theo độ sâu của nhóm đối kháng                  |
+| <img src="reports/benchmark_charts/01_vacuum_solution_steps.png" width="700" alt="Số bước lời giải">                           | So sánh số bước lời giải của các thuật toán trên Vacuum Cleaner |
+| <img src="reports/benchmark_charts/02_vacuum_expanded_nodes.png" width="700" alt="Số node mở rộng">                            | So sánh số node mở rộng                                         |
+| <img src="reports/benchmark_charts/03_vacuum_runtime_ms.png" width="700" alt="Thời gian chạy">                                 | So sánh thời gian chạy                                          |
+| <img src="reports/benchmark_charts/04_local_success_rate.png" width="700" alt="Tỷ lệ thành công tìm kiếm cục bộ">              | Tỷ lệ thành công của nhóm tìm kiếm cục bộ                       |
+| <img src="reports/benchmark_charts/05_local_final_dirty_cells.png" width="700" alt="Số ô bẩn còn lại trung bình">              | Số ô bẩn còn lại trung bình của nhóm tìm kiếm cục bộ            |
+| <img src="reports/benchmark_charts/06_csp_backtracks.png" width="700" alt="Số lần quay lui CSP">                               | Số lần quay lui trong nhóm CSP                                  |
+| <img src="reports/benchmark_charts/07_csp_assignments.png" width="700" alt="Số lần gán màu CSP">                               | Số lần gán màu trong nhóm CSP                                   |
+| <img src="reports/benchmark_charts/08_adversarial_expanded_nodes_depth5.png" width="700" alt="Số node mở rộng nhóm đối kháng"> | Số node mở rộng của Minimax, Alpha-Beta và Expectimax           |
+| <img src="reports/benchmark_charts/09_adversarial_runtime_depth5.png" width="700" alt="Thời gian chạy nhóm đối kháng">         | Thời gian chạy của nhóm đối kháng                               |
+| <img src="reports/benchmark_charts/10_adversarial_expanded_nodes_by_depth.png" width="700" alt="Số node mở rộng theo độ sâu">  | Số node mở rộng theo độ sâu của nhóm đối kháng                  |
 
 
 ### 9.5. Lưu ý khi đọc biểu đồ đối kháng
