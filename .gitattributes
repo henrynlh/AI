@@ -1,0 +1,11 @@
+# Auto normalize text files
+* text=auto
+
+# Python files use LF
+*.py text eol=lf
+
+# Markdown files use LF
+*.md text eol=lf
+
+# Text files use LF
+*.txt text eol=lf
