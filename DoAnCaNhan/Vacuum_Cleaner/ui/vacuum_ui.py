@@ -5,6 +5,8 @@ import copy
 
 from core.vacuum_problem import random_floor, format_floor
 from ui.map_coloring_ui import MapColoringUI
+from ui.tictactoe_ui import TicTacToeUI
+from ui.benchmark_ui import BenchmarkUI
 
 from algorithms.no_observation_search import (
     create_initial_belief_state as create_no_observation_initial_belief_state,
@@ -18,17 +20,20 @@ from algorithms.partial_observation_search import (
 from algorithms.algorithm_manager import (
     solve,
     get_algorithm_names,
+    get_algorithm_groups,
     get_search_types,
     get_no_type_algorithms,
-    get_one_type_algorithms
+    get_one_type_algorithms,
+    get_csp_algorithms,
+    get_adversarial_algorithms
 )
 
 class VacuumCleanerUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Vacuum Cleaner Search")
-        self.root.geometry("1300x760")
-        self.root.minsize(1100, 700)
+        self.root.geometry("1180x700")
+        self.root.minsize(1000, 640)
         self.root.resizable(True, True)
 
         self.floor = None
@@ -47,6 +52,12 @@ class VacuumCleanerUI:
         self.map_coloring_window = None
         self.map_coloring_app = None
 
+        self.tictactoe_window = None
+        self.tictactoe_app = None
+
+        self.benchmark_window = None
+        self.benchmark_app = None
+
         self.setup_styles()
         self.setup_ui()
 
@@ -54,9 +65,16 @@ class VacuumCleanerUI:
         self.load_default_state()
         
 
-    def open_map_coloring_window(self, algorithm_name):
+    def open_map_coloring_window(self, algorithm_name=None):
+        # Nếu mở từ Combobox nhóm, algorithm_name có thể để None.
+        # Khi đó cửa sổ Map Coloring tự chọn thuật toán mặc định và cho người dùng
+        # đổi thuật toán ngay bên trong visualizer.
+        if algorithm_name is None:
+            algorithm_name = get_csp_algorithms()[0]
+
         if self.map_coloring_window is not None and self.map_coloring_window.winfo_exists():
-            self.map_coloring_app.set_algorithm(algorithm_name)
+            if algorithm_name is not None:
+                self.map_coloring_app.set_algorithm(algorithm_name)
             self.map_coloring_window.lift()
             self.map_coloring_window.focus_force()
             return
@@ -73,7 +91,52 @@ class VacuumCleanerUI:
             self.map_coloring_app = None
 
         self.map_coloring_window.protocol("WM_DELETE_WINDOW", on_close)
+
+    def open_tictactoe_window(self, algorithm_name=None):
+        # Nếu mở từ Combobox nhóm, algorithm_name có thể để None.
+        # Khi đó cửa sổ Cờ ca rô tự chọn thuật toán mặc định và cho người dùng
+        # đổi thuật toán ngay bên trong visualizer.
+        if algorithm_name is None:
+            algorithm_name = get_adversarial_algorithms()[0]
+
+        if self.tictactoe_window is not None and self.tictactoe_window.winfo_exists():
+            if algorithm_name is not None:
+                self.tictactoe_app.set_algorithm(algorithm_name)
+            self.tictactoe_window.lift()
+            self.tictactoe_window.focus_force()
+            return
+
+        self.tictactoe_window = tk.Toplevel(self.root)
+        self.tictactoe_app = TicTacToeUI(
+            self.tictactoe_window,
+            algorithm_name
+        )
+
+        def on_close():
+            self.tictactoe_window.destroy()
+            self.tictactoe_window = None
+            self.tictactoe_app = None
+
+        self.tictactoe_window.protocol("WM_DELETE_WINDOW", on_close)
         
+    def open_benchmark_window(self):
+        # Cửa sổ thống kê/biểu đồ dùng để phục vụ phần so sánh trong báo cáo.
+        # Người dùng chạy benchmark, chương trình sẽ xuất CSV và tạo biểu đồ PNG.
+        if self.benchmark_window is not None and self.benchmark_window.winfo_exists():
+            self.benchmark_window.lift()
+            self.benchmark_window.focus_force()
+            return
+
+        self.benchmark_window = tk.Toplevel(self.root)
+        self.benchmark_app = BenchmarkUI(self.benchmark_window)
+
+        def on_close():
+            self.benchmark_window.destroy()
+            self.benchmark_window = None
+            self.benchmark_app = None
+
+        self.benchmark_window.protocol("WM_DELETE_WINDOW", on_close)
+
     # =========================
     # STYLE
     # =========================
@@ -88,29 +151,29 @@ class VacuumCleanerUI:
 
         style.configure(
             "Title.TLabel",
-            font=("Helvetica", 26, "bold"),
+            font=("Helvetica", 24, "bold"),
             background="#ECF0F1",
             foreground="#2C3E50"
         )
 
         style.configure(
             "PanelTitle.TLabel",
-            font=("Helvetica", 16, "bold"),
+            font=("Helvetica", 12, "bold"),
             background="#ECF0F1",
             foreground="#34495E"
         )
 
         style.configure(
             "Sidebar.TLabel",
-            font=("Helvetica", 13, "bold"),
+            font=("Helvetica", 11, "bold"),
             background="#2C3E50",
             foreground="white"
         )
 
         style.configure(
             "Large.TButton",
-            font=("Helvetica", 13, "bold"),
-            padding=10
+            font=("Helvetica", 11, "bold"),
+            padding=7
         )
 
     # =========================
@@ -124,56 +187,133 @@ class VacuumCleanerUI:
         self.setup_content()
 
     def setup_sidebar(self):
+        # Sidebar được đặt trong Canvas để khi cửa sổ nhỏ hoặc máy dùng màn hình
+        # độ phân giải thấp, các nút không bị tràn xuống dưới. Người dùng có thể
+        # cuộn sidebar bằng thanh cuộn hoặc con lăn chuột.
         self.sidebar = ttk.Frame(
             self.main_frame,
-            width=300,
+            width=270,
             style="Sidebar.TFrame"
         )
-        self.sidebar.pack(side="left", fill="y", padx=10, pady=10)
+        self.sidebar.pack(side="left", fill="y", padx=8, pady=8)
         self.sidebar.pack_propagate(False)
 
-        tk.Label(
+        self.sidebar_canvas = tk.Canvas(
             self.sidebar,
+            bg="#2C3E50",
+            highlightthickness=0,
+            bd=0
+        )
+        self.sidebar_scrollbar = ttk.Scrollbar(
+            self.sidebar,
+            orient="vertical",
+            command=self.sidebar_canvas.yview
+        )
+        self.sidebar_content = tk.Frame(self.sidebar_canvas, bg="#2C3E50")
+
+        self.sidebar_window_id = self.sidebar_canvas.create_window(
+            (0, 0),
+            window=self.sidebar_content,
+            anchor="nw"
+        )
+        self.sidebar_canvas.configure(yscrollcommand=self.sidebar_scrollbar.set)
+
+        self.sidebar_canvas.pack(side="left", fill="both", expand=True)
+        self.sidebar_scrollbar.pack(side="right", fill="y")
+
+        def update_scroll_region(event=None):
+            self.sidebar_canvas.configure(scrollregion=self.sidebar_canvas.bbox("all"))
+
+        def resize_sidebar_content(event):
+            self.sidebar_canvas.itemconfigure(self.sidebar_window_id, width=event.width)
+
+        def on_mousewheel(event):
+            self.sidebar_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+        self.sidebar_content.bind("<Configure>", update_scroll_region)
+        self.sidebar_canvas.bind("<Configure>", resize_sidebar_content)
+        self.sidebar_canvas.bind("<Enter>", lambda event: self.sidebar_canvas.bind_all("<MouseWheel>", on_mousewheel))
+        self.sidebar_canvas.bind("<Leave>", lambda event: self.sidebar_canvas.unbind_all("<MouseWheel>"))
+
+        tk.Label(
+            self.sidebar_content,
             text="VACUUM AI",
-            font=("Helvetica", 22, "bold"),
+            font=("Helvetica", 20, "bold"),
             bg="#2C3E50",
             fg="white"
-        ).pack(pady=(22, 20))
+        ).pack(pady=(14, 12))
 
-        ttk.Label(self.sidebar, text="Số dòng", style="Sidebar.TLabel").pack(pady=(5, 3))
-        self.row_entry = ttk.Entry(self.sidebar, font=("Helvetica", 13))
+        ttk.Label(self.sidebar_content, text="Số dòng", style="Sidebar.TLabel").pack(pady=(3, 2))
+        self.row_entry = ttk.Entry(self.sidebar_content, font=("Helvetica", 11))
         self.row_entry.insert(0, "3")
-        self.row_entry.pack(padx=25, pady=5, fill="x")
+        self.row_entry.pack(padx=20, pady=3, fill="x")
 
-        ttk.Label(self.sidebar, text="Số cột", style="Sidebar.TLabel").pack(pady=(8, 3))
-        self.col_entry = ttk.Entry(self.sidebar, font=("Helvetica", 13))
+        ttk.Label(self.sidebar_content, text="Số cột", style="Sidebar.TLabel").pack(pady=(6, 2))
+        self.col_entry = ttk.Entry(self.sidebar_content, font=("Helvetica", 11))
         self.col_entry.insert(0, "3")
-        self.col_entry.pack(padx=25, pady=5, fill="x")
+        self.col_entry.pack(padx=20, pady=3, fill="x")
 
-        ttk.Label(self.sidebar, text="Thuật toán", style="Sidebar.TLabel").pack(pady=(12, 3))
-        algorithm_values = get_algorithm_names()
+        # =========================
+        # Nhóm thuật toán
+        # =========================
+        ttk.Label(self.sidebar_content, text="Nhóm thuật toán", style="Sidebar.TLabel").pack(pady=(8, 2))
+        self.algorithm_groups = get_algorithm_groups()
+        group_values = list(self.algorithm_groups.keys())
+        self.algorithm_group_var = tk.StringVar(value=group_values[0])
+        self.algorithm_group_combobox = ttk.Combobox(
+            self.sidebar_content,
+            textvariable=self.algorithm_group_var,
+            values=group_values,
+            state="readonly",
+            font=("Helvetica", 10)
+        )
+        self.algorithm_group_combobox.pack(padx=20, pady=3, fill="x")
+        self.algorithm_group_combobox.bind("<<ComboboxSelected>>", self.on_algorithm_group_change)
+
+        # =========================
+        # Thuật toán trong nhóm chính
+        # =========================
+        self.algorithm_select_frame = tk.Frame(self.sidebar_content, bg="#2C3E50")
+        self.algorithm_select_frame.pack(fill="x")
+
+        ttk.Label(
+            self.algorithm_select_frame,
+            text="Thuật toán",
+            style="Sidebar.TLabel"
+        ).pack(pady=(6, 2))
+
+        algorithm_values = self.algorithm_groups[group_values[0]]
         self.algorithm_var = tk.StringVar(value=algorithm_values[0])
         self.algorithm_combobox = ttk.Combobox(
-            self.sidebar,
+            self.algorithm_select_frame,
             textvariable=self.algorithm_var,
             values=algorithm_values,
             state="readonly",
-            font=("Helvetica", 12)
+            font=("Helvetica", 10)
         )
-        self.algorithm_combobox.pack(padx=25, pady=5, fill="x")
+        self.algorithm_combobox.pack(padx=20, pady=3, fill="x")
         self.algorithm_combobox.bind("<<ComboboxSelected>>", self.on_algorithm_change)
+
+        self.group_note_label = tk.Label(
+            self.sidebar_content,
+            text="",
+            font=("Helvetica", 9),
+            bg="#2C3E50",
+            fg="#F9E79F",
+            wraplength=220,
+            justify="left"
+        )
 
         # =========================
         # Dạng giải
-        # Đặt trong frame riêng để dễ ẩn/hiện
         # =========================
-        self.search_type_frame = tk.Frame(self.sidebar, bg="#2C3E50")
+        self.search_type_frame = tk.Frame(self.sidebar_content, bg="#2C3E50")
 
         ttk.Label(
             self.search_type_frame,
             text="Dạng giải",
             style="Sidebar.TLabel"
-        ).pack(pady=(12, 3))
+        ).pack(pady=(8, 2))
 
         search_type_values = get_search_types()
         self.search_type_var = tk.StringVar(value=search_type_values[0])
@@ -182,72 +322,171 @@ class VacuumCleanerUI:
             textvariable=self.search_type_var,
             values=search_type_values,
             state="readonly",
-            font=("Helvetica", 12)
+            font=("Helvetica", 10)
         )
-        self.search_type_combobox.pack(padx=25, pady=5, fill="x")
+        self.search_type_combobox.pack(padx=20, pady=3, fill="x")
 
         self.search_type_frame.pack(fill="x")
 
         self.speed_label = ttk.Label(
-            self.sidebar,
+            self.sidebar_content,
             text="Tốc độ chạy",
             style="Sidebar.TLabel"
         )
-        self.speed_label.pack(pady=(12, 3))
+        self.speed_label.pack(pady=(8, 2))
 
         self.speed_scale = ttk.Scale(
-            self.sidebar,
+            self.sidebar_content,
             from_=2000,
             to=100,
             orient=tk.HORIZONTAL,
             command=self.on_speed_change
         )
         self.speed_scale.set(self.speed)
-        self.speed_scale.pack(padx=25, pady=5, fill="x")
+        self.speed_scale.pack(padx=20, pady=3, fill="x")
 
         ttk.Button(
-            self.sidebar,
+            self.sidebar_content,
             text="Random State",
             command=self.random_state,
             style="Large.TButton"
-        ).pack(padx=25, pady=(20, 8), fill="x")
+        ).pack(padx=20, pady=(12, 5), fill="x")
 
         ttk.Button(
-            self.sidebar,
+            self.sidebar_content,
             text="Solve",
             command=self.solve_problem,
             style="Large.TButton"
-        ).pack(padx=25, pady=8, fill="x")
+        ).pack(padx=20, pady=5, fill="x")
 
         ttk.Button(
-            self.sidebar,
+            self.sidebar_content,
+            text="Benchmark / Charts",
+            command=self.open_benchmark_window,
+            style="Large.TButton"
+        ).pack(padx=20, pady=5, fill="x")
+
+        ttk.Button(
+            self.sidebar_content,
             text="Stop",
             command=self.stop,
             style="Large.TButton"
-        ).pack(padx=25, pady=8, fill="x")
+        ).pack(padx=20, pady=5, fill="x")
 
         ttk.Button(
-            self.sidebar,
+            self.sidebar_content,
             text="Reset",
             command=self.reset,
             style="Large.TButton"
-        ).pack(padx=25, pady=8, fill="x")
+        ).pack(padx=20, pady=5, fill="x")
 
         tk.Label(
-            self.sidebar,
+            self.sidebar_content,
             text=(
                 "Ký hiệu:\n"
                 "0 = ô sạch\n"
                 "1 = ô bẩn\n"
                 "V = máy hút bụi"
             ),
-            font=("Helvetica", 10),
+            font=("Helvetica", 9),
             bg="#2C3E50",
             fg="white",
             justify="left"
-        ).pack(pady=14, padx=25, anchor="w")
+        ).pack(pady=(8, 12), padx=20, anchor="w")
 
         self.on_algorithm_change()
+
+    # =========================
+    # ĐỔI NHÓM THUẬT TOÁN
+    # =========================
+    def on_algorithm_group_change(self, event=None):
+        selected_group = self.algorithm_group_var.get()
+        group_algorithms = self.algorithm_groups.get(selected_group, get_algorithm_names())
+
+        # Nhóm CSP và Đối kháng có visualizer riêng.
+        # Người dùng chọn nhóm ở sidebar để mở visualizer, sau đó chọn thuật toán
+        # trực tiếp trong cửa sổ visualizer. Cách này đúng với luồng mô phỏng:
+        # chọn môi trường/bài toán trước, rồi mới chọn thuật toán để chạy.
+        if selected_group == "Ràng buộc CSP":
+            self.algorithm_select_frame.pack_forget()
+            self.search_type_frame.pack_forget()
+            self.group_note_label.config(
+                text="Đã mở visualizer Map Coloring CSP.\nChọn thuật toán CSP trong cửa sổ bản đồ."
+            )
+            if not self.group_note_label.winfo_manager():
+                self.group_note_label.pack(padx=25, pady=(8, 5), fill="x")
+            self.open_map_coloring_window()
+            self.update_main_area_for_external_visualizer("Ràng buộc CSP")
+            return
+
+        if selected_group == "Đối kháng":
+            self.algorithm_select_frame.pack_forget()
+            self.search_type_frame.pack_forget()
+            self.group_note_label.config(
+                text="Đã mở visualizer Cờ ca rô.\nChọn Minimax / Alpha-Beta / Expectimax trong cửa sổ cờ."
+            )
+            if not self.group_note_label.winfo_manager():
+                self.group_note_label.pack(padx=25, pady=(8, 5), fill="x")
+            self.open_tictactoe_window()
+            self.update_main_area_for_external_visualizer("Đối kháng")
+            return
+
+        if not self.algorithm_select_frame.winfo_manager():
+            # Khi vừa quay lại từ nhóm CSP/Đối kháng, search_type_frame có thể
+            # đang bị ẩn. Vì vậy dùng speed_label làm mốc an toàn để tránh lỗi pack.
+            before_widget = self.search_type_frame if self.search_type_frame.winfo_manager() else self.speed_label
+            self.algorithm_select_frame.pack(fill="x", before=before_widget)
+
+        if self.group_note_label.winfo_manager():
+            self.group_note_label.pack_forget()
+
+        self.algorithm_combobox["values"] = group_algorithms
+
+        # Nếu thuật toán hiện tại không thuộc nhóm mới thì tự chọn thuật toán đầu tiên của nhóm.
+        if self.algorithm_var.get() not in group_algorithms:
+            self.algorithm_var.set(group_algorithms[0])
+
+        self.on_algorithm_change()
+
+    # =========================
+    # HIỂN THỊ THÔNG BÁO KHI NHÓM CÓ VISUALIZER RIÊNG
+    # =========================
+    def update_main_area_for_external_visualizer(self, group_name):
+        if not hasattr(self, "log_text"):
+            return
+
+        self.is_running = False
+        self.solution_steps = []
+        self.current_step = -1
+
+        self.draw_grid(self.solve_grid_frame, None)
+        self.draw_grid(self.result_grid_frame, None)
+
+        self.step_label.config(text="Step: 0")
+        self.total_steps_label.config(text="Total steps: 0")
+        self.time_label.config(text="Time: 0s")
+
+        self.log_text.delete(1.0, tk.END)
+        self.log_text.insert(tk.END, f"Đã chọn nhóm: {group_name}.\n")
+
+        if group_name == "Ràng buộc CSP":
+            self.solve_title_label.config(text="Map Coloring CSP")
+            self.result_title_label.config(text="Visualizer riêng")
+            self.log_text.insert(
+                tk.END,
+                "Nhóm này dùng bài toán tô màu bản đồ.\n"
+                "Cửa sổ Map Coloring đã được mở.\n"
+                "Bạn hãy chọn Backtracking / Forward Checking / AC-3 / Min-Conflicts trong cửa sổ đó rồi bấm Solve.\n"
+            )
+        else:
+            self.solve_title_label.config(text="Cờ ca rô 3x3")
+            self.result_title_label.config(text="Visualizer riêng")
+            self.log_text.insert(
+                tk.END,
+                "Nhóm này dùng bài toán cờ ca rô 3x3.\n"
+                "Cửa sổ Cờ ca rô đã được mở.\n"
+                "Bạn hãy chọn Minimax / Alpha-Beta / Expectimax trong cửa sổ đó rồi bấm Solve.\n"
+            )
 
     # =========================
     # KIỂM TRA THUẬT TOÁN BELIEF SEARCH
@@ -261,6 +500,9 @@ class VacuumCleanerUI:
     def is_belief_algorithm(self):
         return self.is_no_observation_algorithm() or self.is_partial_observation_algorithm()
 
+    def is_adversarial_algorithm(self):
+        return self.algorithm_var.get() in get_adversarial_algorithms()
+
     # =========================
     # ẨN / HIỆN DẠNG GIẢI THEO THUẬT TOÁN
     # =========================
@@ -269,8 +511,12 @@ class VacuumCleanerUI:
         
         # Nếu chọn thuật toán Backtracking hay Forward Checking
         # thì mở cửa sổ mô phỏng tô màu bản đồ ngay
-        if algorithm in ["Map Coloring Backtracking", "Forward Checking", "AC-3", "Min-Conflicts"]:
+        if algorithm in get_csp_algorithms():
             self.open_map_coloring_window(algorithm)
+
+        # Nếu chọn nhóm thuật toán đối kháng thì mở cửa sổ mô phỏng cờ ca rô.
+        if algorithm in get_adversarial_algorithms():
+            self.open_tictactoe_window(algorithm)
 
         # Thuật toán không chia dạng thì ẩn Dạng giải
         if algorithm in get_no_type_algorithms():
@@ -330,51 +576,51 @@ class VacuumCleanerUI:
             side="left",
             fill="both",
             expand=True,
-            padx=10,
-            pady=10
+            padx=8,
+            pady=8
         )
 
         ttk.Label(
             self.content_frame,
             text="Vacuum Cleaner Search",
             style="Title.TLabel"
-        ).pack(pady=(8, 4))
+        ).pack(pady=(6, 2))
 
         self.info_frame = ttk.Frame(self.content_frame, style="Content.TFrame")
-        self.info_frame.pack(pady=5)
+        self.info_frame.pack(pady=2)
 
         self.step_label = ttk.Label(
             self.info_frame,
             text="Step: 0",
-            font=("Helvetica", 14, "bold"),
+            font=("Helvetica", 12, "bold"),
             background="#ECF0F1",
             foreground="#34495E"
         )
-        self.step_label.pack(side="left", padx=25)
+        self.step_label.pack(side="left", padx=18)
 
         self.total_steps_label = ttk.Label(
             self.info_frame,
             text="Total steps: 0",
-            font=("Helvetica", 14, "bold"),
+            font=("Helvetica", 12, "bold"),
             background="#ECF0F1",
             foreground="#34495E"
         )
-        self.total_steps_label.pack(side="left", padx=25)
+        self.total_steps_label.pack(side="left", padx=18)
 
         self.time_label = ttk.Label(
             self.info_frame,
             text="Time: 0s",
-            font=("Helvetica", 14, "bold"),
+            font=("Helvetica", 12, "bold"),
             background="#ECF0F1",
             foreground="#34495E"
         )
-        self.time_label.pack(side="left", padx=25)
+        self.time_label.pack(side="left", padx=18)
 
         self.body_frame = ttk.Frame(self.content_frame, style="Content.TFrame")
-        self.body_frame.pack(fill="both", expand=True, padx=12, pady=10)
+        self.body_frame.pack(fill="both", expand=True, padx=8, pady=6)
 
-        self.body_frame.columnconfigure(0, weight=5, minsize=470)
-        self.body_frame.columnconfigure(1, weight=7, minsize=470)
+        self.body_frame.columnconfigure(0, weight=5, minsize=380)
+        self.body_frame.columnconfigure(1, weight=6, minsize=420)
         self.body_frame.rowconfigure(0, weight=1)
 
         self.left_column = ttk.Frame(self.body_frame, style="Panel.TFrame")
@@ -383,8 +629,8 @@ class VacuumCleanerUI:
         self.right_column = ttk.Frame(self.body_frame, style="Panel.TFrame")
         self.right_column.grid(row=0, column=1, sticky="nsew")
 
-        self.left_column.rowconfigure(0, weight=3, minsize=330)
-        self.left_column.rowconfigure(1, weight=2, minsize=210)
+        self.left_column.rowconfigure(0, weight=3, minsize=260)
+        self.left_column.rowconfigure(1, weight=2, minsize=170)
         self.left_column.columnconfigure(0, weight=1)
 
         self.solve_steps_box = tk.Frame(
@@ -393,7 +639,7 @@ class VacuumCleanerUI:
             bd=3,
             relief="solid"
         )
-        self.solve_steps_box.grid(row=0, column=0, sticky="nsew", pady=(0, 8))
+        self.solve_steps_box.grid(row=0, column=0, sticky="nsew", pady=(0, 5))
 
         self.solve_title_label = ttk.Label(
             self.solve_steps_box,
@@ -411,7 +657,7 @@ class VacuumCleanerUI:
             bd=3,
             relief="solid"
         )
-        self.result_box.grid(row=1, column=0, sticky="nsew", pady=(8, 0))
+        self.result_box.grid(row=1, column=0, sticky="nsew", pady=(5, 0))
 
         self.result_title_label = ttk.Label(
             self.result_box,
@@ -435,7 +681,7 @@ class VacuumCleanerUI:
             self.log_box,
             text="Process Log",
             style="PanelTitle.TLabel"
-        ).pack(pady=(8, 4))
+        ).pack(pady=(6, 2))
 
         self.log_inner_frame = tk.Frame(self.log_box, bg="#FFFFFF")
         self.log_inner_frame.pack(fill="both", expand=True, padx=10, pady=(0, 10))
@@ -444,9 +690,9 @@ class VacuumCleanerUI:
 
         self.log_text = tk.Text(
             self.log_inner_frame,
-            height=28,
-            width=70,
-            font=("Consolas", 11),
+            height=22,
+            width=60,
+            font=("Consolas", 10),
             bg="#F9E79F",
             yscrollcommand=self.log_scrollbar.set,
             relief="flat",
@@ -487,13 +733,13 @@ class VacuumCleanerUI:
             return 1, 1, 9, 1, 1
 
         if max_size <= 4:
-            return 4, 2, 22, 4, 4
+            return 4, 2, 20, 3, 3
         if max_size <= 5:
-            return 4, 1, 22, 4, 4
-        if max_size <= 7:
             return 3, 1, 18, 3, 3
+        if max_size <= 7:
+            return 3, 1, 16, 2, 2
         if max_size <= 10:
-            return 2, 1, 14, 2, 2
+            return 2, 1, 13, 1, 1
         return 1, 1, 10, 1, 1
 
     def clear_grid(self, parent_frame):
@@ -934,8 +1180,12 @@ class VacuumCleanerUI:
         
         algorithm = self.algorithm_var.get()
 
-        if algorithm in ["Map Coloring Backtracking", "Forward Checking"]:
+        if algorithm in get_csp_algorithms():
             self.open_map_coloring_window(algorithm)
+            return
+
+        if algorithm in get_adversarial_algorithms():
+            self.open_tictactoe_window(algorithm)
             return
 
         if self.floor is None:
