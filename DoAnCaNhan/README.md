@@ -642,8 +642,6 @@ Vacuum_Cleaner/reports/benchmark_charts/
 
 ### 9.4. Các biểu đồ được sinh ra
 
-| Biểu đồ | Ý nghĩa |
-|---|---|
 | Biểu đồ                                                                                                                                                  | Ý nghĩa                                                         |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | <img src="DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/01_vacuum_solution_steps.png" width="700" alt="Số bước lời giải">                           | So sánh số bước lời giải của các thuật toán trên Vacuum Cleaner |
