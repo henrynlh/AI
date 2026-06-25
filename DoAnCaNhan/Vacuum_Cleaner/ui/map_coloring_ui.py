@@ -14,6 +14,7 @@ from algorithms.backtracking import (
 from algorithms.forward_checking import forwardchecking
 from algorithms.ac_3 import ac3search
 from algorithms.min_conflicts import minconflicts
+from algorithms.algorithm_manager import get_csp_algorithms
 
 # =========================
 # UI CHUNG CHO MAP COLORING CSP
@@ -22,11 +23,15 @@ from algorithms.min_conflicts import minconflicts
 # - Map Coloring Backtracking
 # - Forward Checking
 # - AC-3
+# - Min-Conflicts
 # =========================
 class MapColoringUI:
     def __init__(self, root, algorithm_name="Map Coloring Backtracking"):
         self.root = root
+        self.algorithm_values = get_csp_algorithms()
         self.algorithm_name = algorithm_name
+        if self.algorithm_name not in self.algorithm_values:
+            self.algorithm_name = self.algorithm_values[0]
 
         self.root.title(self.algorithm_name)
         self.root.geometry("1380x780")
@@ -74,10 +79,23 @@ class MapColoringUI:
     # ĐỔI THUẬT TOÁN TRÊN CÙNG 1 CỬA SỔ
     # =========================
     def set_algorithm(self, algorithm_name):
+        if algorithm_name not in self.algorithm_values:
+            algorithm_name = self.algorithm_values[0]
+
         self.algorithm_name = algorithm_name
         self.root.title(self.algorithm_name)
-        self.title_label.config(text=self.algorithm_name)
+        self.title_label.config(text="Map Coloring CSP")
+
+        if hasattr(self, "algorithm_var"):
+            self.algorithm_var.set(self.algorithm_name)
+
         self.reset_screen()
+
+    # =========================
+    # ĐỔI THUẬT TOÁN TRONG CỬA SỔ MAP COLORING
+    # =========================
+    def on_algorithm_change(self, event=None):
+        self.set_algorithm(self.algorithm_var.get())
 
     # =========================
     # STYLE
@@ -118,10 +136,35 @@ class MapColoringUI:
 
         self.title_label = ttk.Label(
             self.main_frame,
-            text=self.algorithm_name,
+            text="Map Coloring CSP",
             style="Title.TLabel"
         )
         self.title_label.pack(pady=(5, 4))
+
+        # Chọn thuật toán ngay trong visualizer CSP.
+        # Luồng mô phỏng lúc này là: chọn nhóm CSP ở màn hình chính -> mở bản đồ ->
+        # chọn thuật toán CSP cần chạy trong cửa sổ bản đồ.
+        self.algorithm_select_frame = ttk.Frame(self.main_frame, style="Content.TFrame")
+        self.algorithm_select_frame.pack(pady=(0, 6))
+
+        ttk.Label(
+            self.algorithm_select_frame,
+            text="Thuật toán CSP:",
+            background="#ECF0F1",
+            font=("Helvetica", 12, "bold")
+        ).pack(side="left", padx=(0, 8))
+
+        self.algorithm_var = tk.StringVar(value=self.algorithm_name)
+        self.algorithm_combobox = ttk.Combobox(
+            self.algorithm_select_frame,
+            textvariable=self.algorithm_var,
+            values=self.algorithm_values,
+            state="readonly",
+            width=28,
+            font=("Helvetica", 12)
+        )
+        self.algorithm_combobox.pack(side="left")
+        self.algorithm_combobox.bind("<<ComboboxSelected>>", self.on_algorithm_change)
 
         self.info_frame = ttk.Frame(self.main_frame, style="Content.TFrame")
         self.info_frame.pack(pady=5)
