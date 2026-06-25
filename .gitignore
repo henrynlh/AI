@@ -1,0 +1,30 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# VS Code temporary files
+tempCodeRunnerFile.py
+.vscode/
+
+# IDE files
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Benchmark generated files
+DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_data/
+DoAnCaNhan/Vacuum_Cleaner/reports/benchmark_charts/
