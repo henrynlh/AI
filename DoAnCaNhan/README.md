@@ -717,5 +717,5 @@ Trong biểu đồ số node mở rộng theo độ sâu, đường **Minimax** 
 |---|---|
 | Họ và tên | Nguyễn Lê Huy |
 | MSSV | 24110221 |
-| Môn học | Trí tuệ nhân tạo |
+| Học phần | Trí tuệ nhân tạo |
 | Giảng viên hướng dẫn | Phan Thị Huyền Trang |
