@@ -377,7 +377,7 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 
 #### Hình ảnh so sánh hiệu suất
 
-<img src="Vacuum_Cleaner/reports/benchmark_charts/11_group_uninformed_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+<img src="Vacuum_Cleaner/reports/benchmark_charts/11_group_uninformed_three_metrics.png" width="1000" alt="Số node mở rộng theo độ sâu">
 
 #### Nhận xét về hiệu suất
 
