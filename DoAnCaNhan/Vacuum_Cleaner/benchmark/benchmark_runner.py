@@ -6,6 +6,7 @@
 # - Không làm thay đổi logic thuật toán gốc.
 # - Chạy nhiều thuật toán trên cùng trạng thái để lấy số liệu công bằng hơn.
 # - Dữ liệu CSV sau đó được dùng để vẽ biểu đồ trong báo cáo.
+# - Bổ sung đo thời gian, số trạng thái đã thăm và bộ nhớ sử dụng.
 # =========================
 
 import copy
@@ -13,9 +14,10 @@ import csv
 import os
 import random
 import time
+import tracemalloc
 from contextlib import contextmanager
 
-from core.vacuum_problem import goal, state_key
+from core.vacuum_problem import goal
 from algorithms.algorithm_manager import solve
 from algorithms.backtracking import mapcoloringbacktracking
 from algorithms.forward_checking import forwardchecking
@@ -25,6 +27,7 @@ from algorithms.minimax import minimax
 from algorithms.alpha_beta import alphabeta
 from algorithms.expectimax import expectimax
 from algorithms.caro_game import create_demo_board
+from algorithms.partial_observation_search import partialobservationsearch
 
 
 # =========================
@@ -57,6 +60,30 @@ VACUUM_TEST_MAPS = [
             [1, 0, 1],
             [0, 1, 0]
         ]
+    ),
+    (
+        "vacuum_3x3_c",
+        [
+            [1, 0, 1],
+            [0, "V", 1],
+            [1, 0, 0]
+        ]
+    ),
+    (
+        "vacuum_3x3_d",
+        [
+            [0, 1, 1],
+            [1, "V", 0],
+            [0, 1, 1]
+        ]
+    ),
+    (
+        "vacuum_3x3_e",
+        [
+            ["V", 0, 1],
+            [1, 1, 0],
+            [1, 0, 1]
+        ]
     )
 ]
 
@@ -88,6 +115,13 @@ LOCAL_SEARCH_ALGORITHMS = [
 ]
 
 
+COMPLEX_ENVIRONMENT_ALGORITHMS = [
+    "No Observation Search",
+    "Partial Observation Search",
+    "AND-OR Graph Search",
+]
+
+
 CSP_ALGORITHMS = [
     ("Backtracking", mapcoloringbacktracking),
     ("Forward Checking", forwardchecking),
@@ -100,6 +134,30 @@ ADVERSARIAL_ALGORITHMS = [
     ("Minimax", minimax),
     ("Alpha-Beta Pruning", alphabeta),
     ("Expectimax", expectimax),
+]
+
+
+ADVERSARIAL_TEST_BOARDS = [
+    (
+        "caro_demo_board",
+        create_demo_board()
+    ),
+    (
+        "caro_board_a",
+        [
+            ["X", "O", ""],
+            ["", "X", ""],
+            ["O", "", ""]
+        ]
+    ),
+    (
+        "caro_board_b",
+        [
+            ["O", "X", ""],
+            ["", "X", ""],
+            ["O", "", ""]
+        ]
+    ),
 ]
 
 
@@ -147,6 +205,15 @@ def count_dirty_cells(floor):
     if floor is None:
         return ""
 
+    # Belief state là list nhiều state.
+    # Với benchmark chỉ cần tổng số ô bẩn còn lại trong tất cả state.
+    if isinstance(floor, list) and len(floor) > 0 and isinstance(floor[0], list):
+        if len(floor[0]) > 0 and isinstance(floor[0][0], list):
+            total = 0
+            for state in floor:
+                total += count_dirty_cells(state)
+            return total
+
     dirty = 0
     for row in floor:
         for cell in row:
@@ -154,6 +221,30 @@ def count_dirty_cells(floor):
                 dirty += 1
 
     return dirty
+
+
+# =========================
+# ĐO THỜI GIAN VÀ BỘ NHỚ
+# =========================
+def run_with_time_and_memory(function):
+    tracemalloc.start()
+    start_time = time.perf_counter()
+
+    try:
+        result = function()
+        error = None
+    except Exception as exc:
+        result = None
+        error = str(exc)
+
+    end_time = time.perf_counter()
+    current_memory, peak_memory = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+
+    runtime_ms = round((end_time - start_time) * 1000, 4)
+    memory_kb = round(peak_memory / 1024, 4)
+
+    return result, error, runtime_ms, memory_kb
 
 
 # =========================
@@ -238,6 +329,7 @@ def create_empty_record():
         "expanded_nodes": "",
         "generated_nodes": "",
         "runtime_ms": "",
+        "memory_kb": "",
         "final_dirty_cells": "",
         "assignments": "",
         "backtracks": "",
@@ -265,19 +357,15 @@ def run_vacuum_algorithm(group_name, algorithm_name, search_type, floor, case_id
     })
 
     with count_vacuum_expansion_calls() as counter:
-        start_time = time.perf_counter()
-        try:
-            if search_type is None:
-                result = solve(copy.deepcopy(floor), algorithm_name)
-            else:
-                result = solve(copy.deepcopy(floor), algorithm_name, search_type)
-            error = None
-        except Exception as exc:
-            result = None
-            error = str(exc)
-        end_time = time.perf_counter()
+        if search_type is None:
+            call = lambda: solve(copy.deepcopy(floor), algorithm_name)
+        else:
+            call = lambda: solve(copy.deepcopy(floor), algorithm_name, search_type)
 
-    record["runtime_ms"] = round((end_time - start_time) * 1000, 4)
+        result, error, runtime_ms, memory_kb = run_with_time_and_memory(call)
+
+    record["runtime_ms"] = runtime_ms
+    record["memory_kb"] = memory_kb
     record["expanded_nodes"] = counter["expanded_nodes"]
     record["generated_nodes"] = counter["generated_nodes"]
 
@@ -346,6 +434,78 @@ def run_local_search_benchmarks(run_count=10):
 
 
 # =========================
+# CHẠY NHÓM MÔI TRƯỜNG PHỨC TẠP
+# =========================
+def create_partial_observation_data(floor):
+    return {
+        "actual_state": copy.deepcopy(floor),
+        # Quan sát một vài ô cố định để benchmark ổn định.
+        "observed_positions": [(0, 0), (1, 1), (2, 2)],
+        "initial_belief_state": None,
+    }
+
+
+def run_complex_environment_algorithm(algorithm_name, floor, case_id, run_id=1):
+    record = create_empty_record()
+    record.update({
+        "group": "Môi trường phức tạp",
+        "algorithm": algorithm_name,
+        "problem": "Belief State Vacuum Cleaner",
+        "case_id": case_id,
+        "run_id": run_id,
+    })
+
+    with count_vacuum_expansion_calls() as counter:
+        if algorithm_name == "Partial Observation Search":
+            data = create_partial_observation_data(floor)
+            call = lambda: partialobservationsearch(data)
+        else:
+            call = lambda: solve(copy.deepcopy(floor), algorithm_name)
+
+        result, error, runtime_ms, memory_kb = run_with_time_and_memory(call)
+
+    record["runtime_ms"] = runtime_ms
+    record["memory_kb"] = memory_kb
+    record["expanded_nodes"] = counter["expanded_nodes"]
+    record["generated_nodes"] = counter["generated_nodes"]
+
+    if result is None:
+        record["success"] = False
+        record["note"] = error or "Không tìm thấy lời giải"
+        return record
+
+    path = result.get("path", [])
+    final_state = path[-1] if len(path) > 0 else result.get("state")
+
+    # Với belief state: dùng số ô bẩn còn lại để đánh giá kết quả cuối.
+    final_dirty_cells = count_dirty_cells(final_state)
+
+    record["success"] = final_dirty_cells == 0
+    record["solution_steps"] = max(len(path) - 1, 0) if len(path) > 0 else ""
+    record["final_dirty_cells"] = final_dirty_cells
+    record["note"] = "OK"
+
+    return record
+
+
+def run_complex_environment_benchmarks():
+    records = []
+
+    for case_id, floor in VACUUM_TEST_MAPS:
+        for algorithm_name in COMPLEX_ENVIRONMENT_ALGORITHMS:
+            records.append(
+                run_complex_environment_algorithm(
+                    algorithm_name,
+                    floor,
+                    case_id,
+                    run_id=1
+                )
+            )
+
+    return records
+
+
+# =========================
 # ĐẾM METRIC TRONG STEP CSP
 # =========================
 def count_csp_metrics(steps):
@@ -378,47 +538,48 @@ def count_csp_metrics(steps):
 # =========================
 # CHẠY NHÓM CSP
 # =========================
-def run_csp_benchmarks():
+def run_csp_benchmarks(run_count=5):
     records = []
 
-    for algorithm_name, function in CSP_ALGORITHMS:
-        record = create_empty_record()
-        record.update({
-            "group": "Ràng buộc CSP",
-            "algorithm": algorithm_name,
-            "problem": "Map Coloring",
-            "case_id": "tphcm_map",
-            "run_id": 1,
-        })
+    for run_id in range(1, run_count + 1):
+        for algorithm_name, function in CSP_ALGORITHMS:
+            record = create_empty_record()
+            record.update({
+                "group": "Ràng buộc CSP",
+                "algorithm": algorithm_name,
+                "problem": "Map Coloring",
+                "case_id": "tphcm_map",
+                "run_id": run_id,
+            })
 
-        start_time = time.perf_counter()
-        try:
-            result = function()
-            error = None
-        except Exception as exc:
-            result = None
-            error = str(exc)
-        end_time = time.perf_counter()
+            # Min-Conflicts có yếu tố ngẫu nhiên nên thay seed theo run_id.
+            if algorithm_name == "Min-Conflicts":
+                call = lambda run_id=run_id: minconflicts(max_steps=100, seed=42 + run_id)
+            else:
+                call = function
 
-        record["runtime_ms"] = round((end_time - start_time) * 1000, 4)
+            result, error, runtime_ms, memory_kb = run_with_time_and_memory(call)
+            record["runtime_ms"] = runtime_ms
+            record["memory_kb"] = memory_kb
 
-        if result is None:
-            record["success"] = False
-            record["note"] = error or "Không chạy được thuật toán CSP"
-        else:
-            steps = result.get("steps", [])
-            assignments, backtracks, constraint_checks, domain_reductions, conflicts = count_csp_metrics(steps)
+            if result is None:
+                record["success"] = False
+                record["note"] = error or "Không chạy được thuật toán CSP"
+            else:
+                steps = result.get("steps", [])
+                assignments, backtracks, constraint_checks, domain_reductions, conflicts = count_csp_metrics(steps)
 
-            record["success"] = result.get("success", False)
-            record["assignments"] = assignments
-            record["backtracks"] = backtracks
-            record["constraint_checks"] = constraint_checks
-            record["domain_reductions"] = domain_reductions
-            record["conflicts"] = conflicts
-            record["expanded_nodes"] = len(steps)
-            record["note"] = "OK"
+                record["success"] = result.get("success", False)
+                record["assignments"] = assignments
+                record["backtracks"] = backtracks
+                record["constraint_checks"] = constraint_checks
+                record["domain_reductions"] = domain_reductions
+                record["conflicts"] = conflicts
+                record["expanded_nodes"] = len(steps)
+                record["generated_nodes"] = assignments + domain_reductions
+                record["note"] = "OK"
 
-        records.append(record)
+            records.append(record)
 
     return records
 
@@ -428,48 +589,46 @@ def run_csp_benchmarks():
 # =========================
 def run_adversarial_benchmarks(max_depth=5):
     records = []
-    board = create_demo_board()
 
-    for algorithm_name, function in ADVERSARIAL_ALGORITHMS:
-        for depth in range(1, max_depth + 1):
-            record = create_empty_record()
-            record.update({
-                "group": "Đối kháng",
-                "algorithm": algorithm_name,
-                "problem": "TicTacToe",
-                "case_id": "demo_board",
-                "run_id": 1,
-                "depth": depth,
-            })
+    for case_index, (case_id, board) in enumerate(ADVERSARIAL_TEST_BOARDS, start=1):
+        for algorithm_name, function in ADVERSARIAL_ALGORITHMS:
+            for depth in range(1, max_depth + 1):
+                record = create_empty_record()
+                record.update({
+                    "group": "Đối kháng",
+                    "algorithm": algorithm_name,
+                    "problem": "TicTacToe",
+                    "case_id": case_id,
+                    "run_id": case_index,
+                    "depth": depth,
+                })
 
-            start_time = time.perf_counter()
-            try:
-                result = function(copy.deepcopy(board), max_depth=depth)
-                error = None
-            except Exception as exc:
-                result = None
-                error = str(exc)
-            end_time = time.perf_counter()
+                call = lambda function=function, depth=depth, board=board: function(copy.deepcopy(board), max_depth=depth)
+                result, error, runtime_ms, memory_kb = run_with_time_and_memory(call)
 
-            record["runtime_ms"] = round((end_time - start_time) * 1000, 4)
+                record["runtime_ms"] = runtime_ms
+                record["memory_kb"] = memory_kb
 
-            if result is None:
-                record["success"] = False
-                record["note"] = error or "Không chạy được thuật toán đối kháng"
-            else:
-                best_move = result.get("best_move")
-                if best_move is None:
-                    best_move_text = ""
+                if result is None:
+                    record["success"] = False
+                    record["note"] = error or "Không chạy được thuật toán đối kháng"
                 else:
-                    best_move_text = f"({best_move[0] + 1},{best_move[1] + 1})"
+                    best_move = result.get("best_move")
+                    if best_move is None:
+                        best_move_text = ""
+                    else:
+                        best_move_text = f"({best_move[0] + 1},{best_move[1] + 1})"
 
-                record["success"] = result.get("success", False)
-                record["expanded_nodes"] = result.get("expanded_nodes", "")
-                record["best_move"] = best_move_text
-                record["best_score"] = result.get("best_score", "")
-                record["note"] = "OK"
+                    expanded_nodes = result.get("expanded_nodes", "")
 
-            records.append(record)
+                    record["success"] = result.get("success", False)
+                    record["expanded_nodes"] = expanded_nodes
+                    record["generated_nodes"] = expanded_nodes
+                    record["best_move"] = best_move_text
+                    record["best_score"] = result.get("best_score", "")
+                    record["note"] = "OK"
+
+                records.append(record)
 
     return records
 
@@ -495,12 +654,27 @@ def write_records_to_csv(records, output_csv=DEFAULT_OUTPUT_CSV):
 # =========================
 # HÀM CHẠY TOÀN BỘ BENCHMARK
 # =========================
-def run_all_benchmarks(output_csv=DEFAULT_OUTPUT_CSV, local_run_count=10, adversarial_max_depth=5):
+def run_all_benchmarks(
+    output_csv=DEFAULT_OUTPUT_CSV,
+    local_run_count=10,
+    csp_run_count=5,
+    adversarial_max_depth=5
+):
     records = []
 
+    # Nhóm tìm kiếm cơ bản và có thông tin: chạy trên 5 map cố định.
     records.extend(run_vacuum_search_benchmarks())
+
+    # Nhóm cục bộ: chạy 10 map random có seed để giảm yếu tố hên/xui.
     records.extend(run_local_search_benchmarks(run_count=local_run_count))
-    records.extend(run_csp_benchmarks())
+
+    # Nhóm môi trường phức tạp: chạy trên cùng 5 map với nhóm vacuum.
+    records.extend(run_complex_environment_benchmarks())
+
+    # CSP: chạy lặp 5 lần, riêng Min-Conflicts thay seed theo mỗi lần chạy.
+    records.extend(run_csp_benchmarks(run_count=csp_run_count))
+
+    # Đối kháng: chạy nhiều bàn cờ mẫu và nhiều độ sâu.
     records.extend(run_adversarial_benchmarks(max_depth=adversarial_max_depth))
 
     return write_records_to_csv(records, output_csv=output_csv)
