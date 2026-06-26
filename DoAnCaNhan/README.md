@@ -431,7 +431,7 @@ Các thuật toán đã cài đặt gồm:
 
 #### Hình ảnh so sánh hiệu suất
 
-<img src="Vacuum_Cleaner/reports/benchmark_charts/12_group_informed_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+<img src="Vacuum_Cleaner/reports/benchmark_charts/12_group_informed_three_metrics.png" width="1000" alt="Số node mở rộng theo độ sâu">
 
 #### Nhận xét về hiệu suất
 
@@ -491,7 +491,7 @@ Các thuật toán đã cài đặt gồm:
 
 #### Hình ảnh so sánh hiệu suất
 
-<img src="Vacuum_Cleaner/reports/benchmark_charts/13_group_local_search_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+<img src="Vacuum_Cleaner/reports/benchmark_charts/13_group_local_search_three_metrics.png" width="1000" alt="Số node mở rộng theo độ sâu">
 
 #### Nhận xét về hiệu suất
 
@@ -548,7 +548,7 @@ Các thuật toán đã cài đặt gồm:
 
 #### Hình ảnh so sánh hiệu suất
 
-<img src="Vacuum_Cleaner/reports/benchmark_charts/14_group_complex_environment_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+<img src="Vacuum_Cleaner/reports/benchmark_charts/14_group_complex_environment_three_metrics.png" width="1000" alt="Số node mở rộng theo độ sâu">
 
 #### Nhận xét về hiệu suất
 
@@ -605,7 +605,7 @@ Các thuật toán đã cài đặt gồm:
 
 #### Hình ảnh so sánh hiệu suất
 
-<img src="Vacuum_Cleaner/reports/benchmark_charts/15_group_csp_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+<img src="Vacuum_Cleaner/reports/benchmark_charts/15_group_csp_three_metrics.png" width="1000" alt="Số node mở rộng theo độ sâu">
 
 #### Nhận xét về hiệu suất
 
@@ -675,7 +675,7 @@ Visualizer được thiết kế để thuật toán chọn nước đi cho quâ
 
 #### Hình ảnh so sánh hiệu suất
 
-<img src="Vacuum_Cleaner/reports/benchmark_charts/16_group_adversarial_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+<img src="Vacuum_Cleaner/reports/benchmark_charts/16_group_adversarial_three_metrics.png" width="1000" alt="Số node mở rộng theo độ sâu">
 
 #### Nhận xét về hiệu suất
 
