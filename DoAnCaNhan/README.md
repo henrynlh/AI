@@ -21,14 +21,14 @@ Mục tiêu chính của đồ án là từ mỗi thuật toán của các nhóm
 
 Đồ án tập trung xây dựng một chương trình mô phỏng quá trình giải bài toán sử dụng các nhóm thuật toán đã học trong học phần **Trí tuệ nhân tạo**:
 
-- Tìm kiếm không có thông tin.
-- Tìm kiếm có thông tin.
-- Tìm kiếm cục bộ.
-- Tìm kiếm trong môi trường phức tạp.
-- Bài toán ràng buộc CSP.
-- Thuật toán đối kháng.
+- **Tìm kiếm không có thông tin**
+- **Tìm kiếm có thông tin**
+- **Tìm kiếm cục bộ**
+- **Tìm kiếm trong môi trường phức tạp**
+- **Bài toán ràng buộc CSP**
+- **Thuật toán đối kháng**
 
-Các mục tiêu cụ thể:
+**Mục tiêu:**
 
 - Mô hình hóa bài toán AI theo các thành phần: trạng thái, trạng thái ban đầu, trạng thái đích, hành động, chi phí, hàm đánh giá và lời giải.
 - Cài đặt nhiều nhóm thuật toán AI theo từng file riêng, dễ đọc và dễ mở rộng.
@@ -138,7 +138,7 @@ DoAnCaNhan/
         └── benchmark_ui.py
 ```
 
-Lưu ý: thư mục `reports/` và các file biểu đồ sẽ được tạo sau khi chạy chức năng Benchmark / Charts.
+**Lưu ý:** thư mục `reports/` và các file biểu đồ sẽ được tạo sau khi chạy chức năng Benchmark / Charts.
 
 ### Vai trò các thư mục chính
 
@@ -209,12 +209,12 @@ Trên giao diện chính **VACUUM AI**, người dùng thao tác theo từng nh�
 
 Các nhóm thuật toán sau được mô phỏng trên môi trường máy hút bụi hoặc belief state liên quan đến máy hút bụi:
 
-- Tìm kiếm không có thông tin
-- Tìm kiếm có thông tin
-- Tìm kiếm cục bộ
-- Môi trường phức tạp
+- **Tìm kiếm không có thông tin**
+- **Tìm kiếm có thông tin**
+- **Tìm kiếm cục bộ**
+- **Môi trường phức tạp**
 
-Quy trình sử dụng:
+**Quy trình sử dụng:**
 
 1. Nhập số dòng và số cột cho môi trường.
 2. Chọn **nhóm thuật toán** trong combobox.
@@ -231,10 +231,10 @@ Khi chọn nhóm **Ràng buộc CSP**, chương trình sẽ mở cửa sổ riê
 
 Trong cửa sổ này, người dùng mới chọn thuật toán CSP cần mô phỏng, bao gồm:
 
-- Map Coloring Backtracking.
-- Forward Checking.
-- AC-3.
-- Min-Conflicts.
+- **Map Coloring Backtracking**
+- **Forward Checking**
+- ***AC-3**
+- **Min-Conflicts**
 
 Cách tổ chức này giúp nhóm CSP được mô phỏng đúng bản chất bài toán ràng buộc, thay vì ép chạy trên môi trường máy hút bụi.
 
@@ -244,9 +244,9 @@ Khi chọn nhóm **Đối kháng**, chương trình sẽ mở cửa sổ riêng 
 
 Trong cửa sổ cờ ca rô, người dùng mới chọn thuật toán đối kháng cần chạy, bao gồm:
 
-- Minimax.
-- Alpha-Beta Pruning.
-- Expectimax.
+- **Minimax**
+- **Alpha-Beta Pruning**
+- **Expectimax**
 
 Người dùng có thể click trực tiếp lên bàn cờ để tạo trạng thái ban đầu, sau đó bấm **Solve** để thuật toán phân tích và chọn nước đi tốt nhất cho quân **X**.
 
@@ -259,7 +259,7 @@ Người dùng có thể bấm nút **Benchmark / Charts** để mở giao diệ
 Giao diện được tổ chức theo hướng:
 
 - Giao diện chính dùng cho các thuật toán tìm kiếm và tối ưu trên môi trường máy hút bụi.
-- Nhóm CSP có visualizer riêng để mô phỏng bài toán ràng buộc.
+- Nhóm **CSP** có visualizer riêng để mô phỏng bài toán ràng buộc.
 - Nhóm đối kháng có visualizer riêng để mô phỏng trò chơi hai người.
 - Phần benchmark được tách riêng để thống kê và sinh biểu đồ phục vụ báo cáo.
 
@@ -302,12 +302,12 @@ Khi máy hút bụi di chuyển đến một ô bẩn, ô đó được xem như
 
 ### Vai trò trong đồ án
 
-Bài toán Vacuum Cleaner được dùng làm môi trường chính để mô phỏng và so sánh các nhóm thuật toán:
+Bài toán **Vacuum Cleaner** được dùng làm môi trường chính để mô phỏng và so sánh các nhóm thuật toán:
 
-- Tìm kiếm không có thông tin.
-- Tìm kiếm có thông tin.
-- Tìm kiếm cục bộ.
-- Tìm kiếm trong môi trường phức tạp.
+- **Tìm kiếm không có thông tin**
+- **Tìm kiếm có thông tin**
+- **Tìm kiếm cục bộ**
+- **Tìm kiếm trong môi trường phức tạp**
 
 Các thuật toán trong những nhóm này trực tiếp tìm đường đi hoặc tìm chuỗi hành động để đưa máy hút bụi từ trạng thái ban đầu đến trạng thái đích.
 
@@ -331,10 +331,10 @@ Các thuật toán tìm kiếm không có thông tin không sử dụng heuristi
 
 Các thuật toán đã cài đặt gồm:
 
-* **BFS** - Breadth-First Search.
-* **DFS** - Depth-First Search.
-* **UCS** - Uniform Cost Search.
-* **IDS** - Iterative Deepening Search.
+- **BFS** - Breadth-First Search.
+- **DFS** - Depth-First Search.
+- **UCS** - Uniform Cost Search.
+- **IDS** - Iterative Deepening Search.
 
 #### Thành phần chính của bài toán tìm kiếm
 
@@ -381,13 +381,13 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 
 #### Nhận xét về hiệu suất
 
-**BFS:** Đảm bảo tìm được lời giải ngắn nhất khi chi phí các bước bằng nhau, nhưng tốn bộ nhớ do phải lưu nhiều trạng thái ở cùng mức độ sâu.
+- **BFS:** Đảm bảo tìm được lời giải ngắn nhất khi chi phí các bước bằng nhau, nhưng tốn bộ nhớ do phải lưu nhiều trạng thái ở cùng mức độ sâu.
 
-**DFS:** Chạy nhanh và dùng ít bộ nhớ hơn BFS, nhưng không đảm bảo lời giải tối ưu và có thể đi sâu vào nhánh kém hiệu quả.
+- **DFS:** Chạy nhanh và dùng ít bộ nhớ hơn BFS, nhưng không đảm bảo lời giải tối ưu và có thể đi sâu vào nhánh kém hiệu quả.
 
-**UCS:** Phù hợp khi cần tối ưu chi phí đường đi, nhưng có thể mở rộng nhiều node và tốn bộ nhớ nếu không gian trạng thái lớn.
+- **UCS:** Phù hợp khi cần tối ưu chi phí đường đi, nhưng có thể mở rộng nhiều node và tốn bộ nhớ nếu không gian trạng thái lớn.
 
-**IDS:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ hơn BFS nhưng phải lặp lại tìm kiếm nhiều lần theo từng giới hạn độ sâu.
+- **IDS:** Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ hơn BFS nhưng phải lặp lại tìm kiếm nhiều lần theo từng giới hạn độ sâu.
 
 ---
 
@@ -435,11 +435,11 @@ Các thuật toán đã cài đặt gồm:
 
 #### Nhận xét về hiệu suất
 
-**Greedy:** Thường chạy nhanh vì chỉ ưu tiên trạng thái có heuristic tốt nhất, nhưng không đảm bảo lời giải tối ưu do không xét chi phí đã đi.
+- **Greedy:** Thường chạy nhanh vì chỉ ưu tiên trạng thái có heuristic tốt nhất, nhưng không đảm bảo lời giải tối ưu do không xét chi phí đã đi.
 
-**A\*:** Hiệu quả và ổn định hơn Greedy vì kết hợp cả chi phí thực tế `g(n)` và heuristic `h(n)`, tuy nhiên cần nhiều bộ nhớ để lưu frontier và trạng thái đã xét.
+- **A\*:** Hiệu quả và ổn định hơn Greedy vì kết hợp cả chi phí thực tế `g(n)` và heuristic `h(n)`, tuy nhiên cần nhiều bộ nhớ để lưu frontier và trạng thái đã xét.
 
-**IDA\*:** Tiết kiệm bộ nhớ hơn A* nhờ tìm kiếm theo ngưỡng chi phí, nhưng có thể chậm hơn do phải lặp lại quá trình tìm kiếm nhiều lần.
+- **IDA\*:** Tiết kiệm bộ nhớ hơn A* nhờ tìm kiếm theo ngưỡng chi phí, nhưng có thể chậm hơn do phải lặp lại quá trình tìm kiếm nhiều lần.
 
 ---
 
@@ -449,12 +449,12 @@ Các thuật toán tìm kiếm cục bộ không nhất thiết lưu toàn bộ 
 
 Các thuật toán đã cài đặt gồm:
 
-* **Simple Hill Climbing**.
-* **Steepest Ascent Hill Climbing**.
-* **Stochastic Hill Climbing**.
-* **Random Restart Hill Climbing**.
-* **Local Beam Search**.
-* **Simulated Annealing**.
+- **Simple Hill Climbing**.
+- **Steepest Ascent Hill Climbing**.
+- **Stochastic Hill Climbing**.
+- **Random Restart Hill Climbing**.
+- **Local Beam Search**.
+- **Simulated Annealing**.
 
 #### Thành phần chính của bài toán tìm kiếm
 
@@ -495,17 +495,17 @@ Các thuật toán đã cài đặt gồm:
 
 #### Nhận xét về hiệu suất
 
-**Simple Hill Climbing:** Chạy nhanh, dễ cài đặt nhưng dễ kẹt ở cực trị cục bộ.
+- **Simple Hill Climbing:** Chạy nhanh, dễ cài đặt nhưng dễ kẹt ở cực trị cục bộ.
 
-**Steepest Ascent Hill Climbing:** Chọn trạng thái lân cận tốt nhất nên thường ổn hơn Simple Hill Climbing, nhưng tốn thời gian hơn do phải xét nhiều trạng thái lân cận.
+- **Steepest Ascent Hill Climbing:** Chọn trạng thái lân cận tốt nhất nên thường ổn hơn Simple Hill Climbing, nhưng tốn thời gian hơn do phải xét nhiều trạng thái lân cận.
 
-**Stochastic Hill Climbing:** Có yếu tố ngẫu nhiên nên linh hoạt hơn, nhưng kết quả có thể thay đổi giữa các lần chạy.
+- **Stochastic Hill Climbing:** Có yếu tố ngẫu nhiên nên linh hoạt hơn, nhưng kết quả có thể thay đổi giữa các lần chạy.
 
-**Random Restart Hill Climbing:** Giảm nguy cơ kẹt ở cực trị cục bộ bằng cách chạy lại nhiều lần từ trạng thái khác nhau, nhưng tốn thêm thời gian.
+- **Random Restart Hill Climbing:** Giảm nguy cơ kẹt ở cực trị cục bộ bằng cách chạy lại nhiều lần từ trạng thái khác nhau, nhưng tốn thêm thời gian.
 
-**Local Beam Search:** Giữ nhiều trạng thái ứng viên cùng lúc nên có khả năng tìm lời giải tốt hơn, nhưng tốn bộ nhớ hơn Hill Climbing.
+- **Local Beam Search:** Giữ nhiều trạng thái ứng viên cùng lúc nên có khả năng tìm lời giải tốt hơn, nhưng tốn bộ nhớ hơn Hill Climbing.
 
-**Simulated Annealing:** Có thể thoát khỏi cực trị cục bộ nhờ chấp nhận trạng thái xấu hơn trong một số trường hợp, nhưng thời gian chạy thường cao hơn.
+- **Simulated Annealing:** Có thể thoát khỏi cực trị cục bộ nhờ chấp nhận trạng thái xấu hơn trong một số trường hợp, nhưng thời gian chạy thường cao hơn.
 
 ---
 
@@ -552,11 +552,11 @@ Các thuật toán đã cài đặt gồm:
 
 #### Nhận xét về hiệu suất
 
-**No Observation Search:** Phù hợp khi tác nhân không quan sát được môi trường, nhưng tốn tài nguyên do phải xử lý nhiều trạng thái niềm tin cùng lúc.
+- **No Observation Search:** Phù hợp khi tác nhân không quan sát được môi trường, nhưng tốn tài nguyên do phải xử lý nhiều trạng thái niềm tin cùng lúc.
 
-**Partial Observation Search:** Hiệu quả hơn No Observation khi có thêm thông tin quan sát, nhưng vẫn phức tạp hơn tìm kiếm thông thường do phải cập nhật belief state.
+- **Partial Observation Search:** Hiệu quả hơn No Observation khi có thêm thông tin quan sát, nhưng vẫn phức tạp hơn tìm kiếm thông thường do phải cập nhật belief state.
 
-**AND-OR Graph Search:** Phù hợp với môi trường không tất định, nơi một hành động có thể dẫn đến nhiều kết quả khác nhau, nhưng số nhánh cần xét có thể tăng nhanh.
+- **AND-OR Graph Search:** Phù hợp với môi trường không tất định, nơi một hành động có thể dẫn đến nhiều kết quả khác nhau, nhưng số nhánh cần xét có thể tăng nhanh.
 
 ---
 
@@ -568,10 +568,10 @@ Nhóm này được tách sang visualizer riêng **Map Coloring UI** để phù 
 
 Các thuật toán đã cài đặt gồm:
 
-* **Map Coloring Backtracking**.
-* **Forward Checking**.
-* **AC-3**.
-* **Min-Conflicts**.
+- **Map Coloring Backtracking**.
+- **Forward Checking**.
+- **AC-3**.
+- **Min-Conflicts**.
 
 #### Thành phần chính của bài toán CSP
 
@@ -609,13 +609,13 @@ Các thuật toán đã cài đặt gồm:
 
 #### Nhận xét về hiệu suất
 
-**Backtracking:** Dễ cài đặt và phù hợp với bài toán CSP nhỏ, nhưng có thể chậm nếu phải quay lui nhiều lần.
+- **Backtracking:** Dễ cài đặt và phù hợp với bài toán CSP nhỏ, nhưng có thể chậm nếu phải quay lui nhiều lần.
 
-**Forward Checking:** Hiệu quả hơn Backtracking thuần vì phát hiện sớm các nhánh không còn giá trị hợp lệ.
+- **Forward Checking:** Hiệu quả hơn Backtracking thuần vì phát hiện sớm các nhánh không còn giá trị hợp lệ.
 
-**AC-3:** Giúp giảm miền giá trị bằng cách loại bỏ các lựa chọn không phù hợp, nhưng cần thêm thời gian để kiểm tra và duy trì ràng buộc.
+- **AC-3:** Giúp giảm miền giá trị bằng cách loại bỏ các lựa chọn không phù hợp, nhưng cần thêm thời gian để kiểm tra và duy trì ràng buộc.
 
-**Min-Conflicts:** Phù hợp với bài toán CSP lớn nhờ sửa dần các xung đột, nhưng kết quả có thể phụ thuộc vào trạng thái khởi tạo.
+- **Min-Conflicts:** Phù hợp với bài toán CSP lớn nhờ sửa dần các xung đột, nhưng kết quả có thể phụ thuộc vào trạng thái khởi tạo.
 
 ---
 
@@ -679,11 +679,11 @@ Visualizer được thiết kế để thuật toán chọn nước đi cho quâ
 
 #### Nhận xét về hiệu suất
 
-**Minimax:** Cho quyết định chắc chắn khi giả định hai người chơi đều tối ưu, nhưng số node mở rộng tăng nhanh theo độ sâu.
+- **Minimax:** Cho quyết định chắc chắn khi giả định hai người chơi đều tối ưu, nhưng số node mở rộng tăng nhanh theo độ sâu.
 
-**Alpha-Beta Pruning:** Cho kết quả tương đương Minimax nhưng mở rộng ít node hơn nhờ cắt tỉa các nhánh không cần xét.
+- **Alpha-Beta Pruning:** Cho kết quả tương đương Minimax nhưng mở rộng ít node hơn nhờ cắt tỉa các nhánh không cần xét.
 
-**Expectimax:** Phù hợp khi đối thủ có yếu tố ngẫu nhiên, nhưng vẫn có thể mở rộng nhiều node vì phải xét các khả năng tại chance node.
+- **Expectimax:** Phù hợp khi đối thủ có yếu tố ngẫu nhiên, nhưng vẫn có thể mở rộng nhiều node vì phải xét các khả năng tại chance node.
 
 ---
 
