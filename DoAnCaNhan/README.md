@@ -374,6 +374,21 @@ Việc triển khai hai dạng kiểm tra goal giúp quan sát rõ hơn sự kh�
 | **IDS - Dạng 1** | <img src="images/ids_d1.gif" width="700" alt="IDS Dạng 1"> |
 | **IDS - Dạng 2** | <img src="images/ids_d2.gif" width="700" alt="IDS Dạng 2"> |
 | **UCS**          | <img src="images/ucs_d1.gif" width="700" alt="UCS">        |
+
+#### Hình ảnh so sánh hiệu suất
+
+<img src="Vacuum_Cleaner/reports/benchmark_charts/11_group_uninformed_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+
+#### Nhận xét về hiệu suất
+
+BFS: Đảm bảo tìm được lời giải ngắn nhất khi chi phí các bước bằng nhau, nhưng tốn bộ nhớ do phải lưu nhiều trạng thái ở cùng mức độ sâu.
+
+DFS: Chạy nhanh và dùng ít bộ nhớ hơn BFS, nhưng không đảm bảo lời giải tối ưu và có thể đi sâu vào nhánh kém hiệu quả.
+
+UCS: Phù hợp khi cần tối ưu chi phí đường đi, nhưng có thể mở rộng nhiều node và tốn bộ nhớ nếu không gian trạng thái lớn.
+
+IDS: Kết hợp ưu điểm của BFS và DFS, tiết kiệm bộ nhớ hơn BFS nhưng phải lặp lại tìm kiếm nhiều lần theo từng giới hạn độ sâu.
+
 ---
 
 ### 8.2. Tìm kiếm có thông tin: Greedy, A*, IDA*
@@ -413,6 +428,18 @@ Các thuật toán đã cài đặt gồm:
 | **Greedy** | <img src="images/greedy.gif" width="700" alt="Greedy">    |
 | **A\***     | <img src="images/astar.gif" width="700" alt="A Star">     |
 | **IDA\***   | <img src="images/idastar.gif" width="700" alt="IDA Star"> |
+
+#### Hình ảnh so sánh hiệu suất
+
+<img src="Vacuum_Cleaner/reports/benchmark_charts/12_group_informed_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+
+#### Nhận xét về hiệu suất
+
+Greedy: Thường chạy nhanh vì chỉ ưu tiên trạng thái có heuristic tốt nhất, nhưng không đảm bảo lời giải tối ưu do không xét chi phí đã đi.
+
+A*: Hiệu quả và ổn định hơn Greedy vì kết hợp cả chi phí thực tế `g(n)` và heuristic `h(n)`, tuy nhiên cần nhiều bộ nhớ để lưu frontier và trạng thái đã xét.
+
+IDA*: Tiết kiệm bộ nhớ hơn A* nhờ tìm kiếm theo ngưỡng chi phí, nhưng có thể chậm hơn do phải lặp lại quá trình tìm kiếm nhiều lần.
 
 ---
 
@@ -462,6 +489,24 @@ Các thuật toán đã cài đặt gồm:
 | **Local Beam Search**             | <img src="images/local_beam_search.gif" width="700" alt="Local Beam Search">                         |
 | **Simulated Annealing**           | <img src="images/simulated_annealing.gif" width="700" alt="Simulated Annealing">                     |
 
+#### Hình ảnh so sánh hiệu suất
+
+<img src="Vacuum_Cleaner/reports/benchmark_charts/13_group_local_search_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+
+#### Nhận xét về hiệu suất
+
+Simple Hill Climbing: Chạy nhanh, dễ cài đặt nhưng dễ kẹt ở cực trị cục bộ.
+
+Steepest Ascent Hill Climbing: Chọn trạng thái lân cận tốt nhất nên thường ổn hơn Simple Hill Climbing, nhưng tốn thời gian hơn do phải xét nhiều trạng thái lân cận.
+
+Stochastic Hill Climbing: Có yếu tố ngẫu nhiên nên linh hoạt hơn, nhưng kết quả có thể thay đổi giữa các lần chạy.
+
+Random Restart Hill Climbing: Giảm nguy cơ kẹt ở cực trị cục bộ bằng cách chạy lại nhiều lần từ trạng thái khác nhau, nhưng tốn thêm thời gian.
+
+Local Beam Search: Giữ nhiều trạng thái ứng viên cùng lúc nên có khả năng tìm lời giải tốt hơn, nhưng tốn bộ nhớ hơn Hill Climbing.
+
+Simulated Annealing: Có thể thoát khỏi cực trị cục bộ nhờ chấp nhận trạng thái xấu hơn trong một số trường hợp, nhưng thời gian chạy thường cao hơn.
+
 ---
 
 ### 8.4. Tìm kiếm trong môi trường phức tạp: No Observation, Partial Observation, AND-OR Graph Search
@@ -500,6 +545,18 @@ Các thuật toán đã cài đặt gồm:
 | **No Observation Search**      | <img src="images/no_observation_search.gif" width="700" alt="No Observation Search">           |
 | **Partial Observation Search** | <img src="images/partial_observation_search.gif" width="700" alt="Partial Observation Search"> |
 | **AND-OR Graph Search**        | <img src="images/and_or_graph_search.gif" width="700" alt="AND-OR Graph Search">               |
+
+#### Hình ảnh so sánh hiệu suất
+
+<img src="Vacuum_Cleaner/reports/benchmark_charts/14_group_complex_environment_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+
+#### Nhận xét về hiệu suất
+
+No Observation Search: Phù hợp khi tác nhân không quan sát được môi trường, nhưng tốn tài nguyên do phải xử lý nhiều trạng thái niềm tin cùng lúc.
+
+Partial Observation Search: Hiệu quả hơn No Observation khi có thêm thông tin quan sát, nhưng vẫn phức tạp hơn tìm kiếm thông thường do phải cập nhật belief state.
+
+AND-OR Graph Search: Phù hợp với môi trường không tất định, nơi một hành động có thể dẫn đến nhiều kết quả khác nhau, nhưng số nhánh cần xét có thể tăng nhanh.
 
 ---
 
@@ -545,6 +602,20 @@ Các thuật toán đã cài đặt gồm:
 | **Forward Checking** | <img src="images/forward_checking.gif" width="650" alt="Forward Checking"> |
 | **AC-3**             | <img src="images/ac_3.gif" width="650" alt="AC-3">                         |
 | **Min-Conflicts**    | <img src="images/min_conflicts.gif" width="650" alt="Min-Conflicts">       |
+
+#### Hình ảnh so sánh hiệu suất
+
+<img src="Vacuum_Cleaner/reports/benchmark_charts/15_group_csp_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+
+#### Nhận xét về hiệu suất
+
+Backtracking: Dễ cài đặt và phù hợp với bài toán CSP nhỏ, nhưng có thể chậm nếu phải quay lui nhiều lần.
+
+Forward Checking: Hiệu quả hơn Backtracking thuần vì phát hiện sớm các nhánh không còn giá trị hợp lệ.
+
+AC-3: Giúp giảm miền giá trị bằng cách loại bỏ các lựa chọn không phù hợp, nhưng cần thêm thời gian để kiểm tra và duy trì ràng buộc.
+
+Min-Conflicts: Phù hợp với bài toán CSP lớn nhờ sửa dần các xung đột, nhưng kết quả có thể phụ thuộc vào trạng thái khởi tạo.
 
 ---
 
@@ -602,11 +673,23 @@ Visualizer được thiết kế để thuật toán chọn nước đi cho quâ
 | **Alpha-Beta Pruning** | <img src="images/alpha_beta.gif" width="700" alt="Alpha-Beta Pruning"> |
 | **Expectimax**         | <img src="images/expectimax.gif" width="700" alt="Expectimax">         |
 
+#### Hình ảnh so sánh hiệu suất
+
+<img src="Vacuum_Cleaner/reports/benchmark_charts/16_group_adversarial_three_metrics.png" width="700" alt="Số node mở rộng theo độ sâu">
+
+#### Nhận xét về hiệu suất
+
+Minimax: Cho quyết định chắc chắn khi giả định hai người chơi đều tối ưu, nhưng số node mở rộng tăng nhanh theo độ sâu.
+
+Alpha-Beta Pruning: Cho kết quả tương đương Minimax nhưng mở rộng ít node hơn nhờ cắt tỉa các nhánh không cần xét.
+
+Expectimax: Phù hợp khi đối thủ có yếu tố ngẫu nhiên, nhưng vẫn có thể mở rộng nhiều node vì phải xét các khả năng tại chance node.
+
 ---
 
 ## 9. Benchmark và biểu đồ so sánh
 
-Đồ án có bổ sung chức năng **Benchmark / Charts** để chạy thống kê và sinh biểu đồ phục vụ báo cáo.
+Đồ án có bổ sung chức năng **Benchmark / Charts** để chạy thống kê và sinh biểu đồ.
 
 ### 9.1. Mục tiêu benchmark
 
@@ -618,7 +701,7 @@ Benchmark được dùng để:
 - Đánh giá tỷ lệ thành công của nhóm tìm kiếm cục bộ.
 - So sánh số lần gán màu, số lần quay lui trong nhóm CSP.
 - So sánh số node mở rộng trong cây trò chơi của nhóm đối kháng.
-- Tạo biểu đồ PNG để đưa vào báo cáo.
+- Tạo biểu đồ PNG.
 
 ### 9.2. Cách chạy benchmark
 
@@ -641,7 +724,7 @@ Vacuum_Cleaner/reports/benchmark_data/benchmark_results.csv
 Vacuum_Cleaner/reports/benchmark_charts/
 ```
 
-### 9.4. Các biểu đồ được sinh ra
+### 9.4. Các biểu đồ so sánh các thuật toán
 
 | Biểu đồ                                                                                                                                       | Ý nghĩa                                                         |
 | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
