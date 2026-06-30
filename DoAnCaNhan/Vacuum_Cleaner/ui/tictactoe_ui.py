@@ -45,8 +45,6 @@ class TicTacToeUI:
             self.algorithm_name = self.algorithm_values[0]
 
         self.root.title(self.algorithm_name + " - Cờ ca rô")
-        # Kích thước cửa sổ được giảm lại để vừa màn hình laptop phổ biến.
-        # Bản trước để log + 3 panel quá cao nên thanh nút phía dưới bị che.
         self.root.geometry("1180x720")
         self.root.minsize(980, 640)
         self.root.resizable(True, True)

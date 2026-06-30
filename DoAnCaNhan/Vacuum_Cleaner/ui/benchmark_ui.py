@@ -2,7 +2,6 @@
 # BENCHMARK UI
 # =========================
 # Cửa sổ này dùng để chạy benchmark và sinh biểu đồ so sánh thuật toán.
-# Phần này phục vụ báo cáo/thuyết trình, không thay thế visualizer thuật toán.
 # =========================
 
 import os
